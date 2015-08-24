@@ -1,0 +1,12 @@
+{
+    "name": "alphaHackaton",
+    "version": "0.0.0",
+    "description": "Hackaton Alpha Team",
+    "private": true,
+    "dependencies": {
+        "express": "^4.12.4",
+        "mongoose": "~3.6.13",
+        "body-parser": "~1.0.1",
+        "ejs": "^2.3.1"
+    }
+}
