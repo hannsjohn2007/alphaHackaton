@@ -41,13 +41,11 @@
           <script src="js/lte-ie7.js"></script>
         <![endif]-->
 
-        <script
-        src="http://maps.googleapis.com/maps/api/js">
-        </script>
-
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js"></script>
         <script>
             var markers=[];
-
+            var sites;
             function addMarkerToMarkers(marker){
                 window.markers.push(marker);
             }
@@ -72,6 +70,7 @@
 
         <script>
             var map;
+            var markerCluster;
         
             function initialize() {
                 var myLatlng = new google.maps.LatLng(14.7212398,121.0400891);
@@ -81,10 +80,10 @@
                     mapTypeId:google.maps.MapTypeId.ROADMAP
                 };
                 window.map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+               
+//                window.markerCluster= new MarkerClusterer(window.map, window.markers);
                 
-                for (var i = 0; i < 5; i++){
-                    ClickMoreButton();
-                }
+                
             }
 
             function PlotMarkers(win,map, lat, lng, theTitle) {
@@ -96,7 +95,6 @@
                 marker.setMap(map)
 
                 marker.addListener('click', function() {
-                    //alert(contentString);
                     win.open(map, marker);
                 });
 
@@ -105,8 +103,9 @@
 
                 window.map.setCenter(marker.getPosition());
             }
-
+            
             google.maps.event.addDomListener(window, 'load', initialize);
+            
         </script>
     </head>
     <body>
@@ -243,7 +242,6 @@
     										<th>Site-Name</th>
     										<th>Site-ID</th>
     										<th>Technology</th>
-    										<th>Performance</th>
                                             <th><center>Marker Status</center></th>
     									</tr>
     								</thead>   
@@ -347,6 +345,7 @@
 
     <!-- javascripts -->
     <script src="js/jquery.js"></script>
+    <script src="js/markerclusterer.js"></script>
 	<script src="js/jquery-ui-1.10.4.min.js"></script>
     <script src="js/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
@@ -364,7 +363,7 @@
     <script src="js/fullcalendar.min.js"></script> <!-- Full Google Calendar - Calendar -->
 	<script src="assets/fullcalendar/fullcalendar/fullcalendar.js"></script>
     <!--script for this page only-->
-    <script src="http://maps.googleapis.com/maps/api/js"></script>
+
     <script src="js/calendar-custom.js"></script>
 	<script src="js/jquery.rateit.min.js"></script>
     <!-- custom select -->
@@ -428,235 +427,42 @@
 	            }
 	        });
 	    });
-
-        var MoreCoordinates = [
-        [14.7212398, 121.0400891],
-        [14.7343719, 121.0572338],
-        [14.4649923,121.0180306],
-        [14.6849978,121.0954285],
-        [14.7362494,121.0559678],
-        [14.7624922,121.064465],
-        [14.6574998,120.9611034],
-        [14.7268724,121.0532212],
-        [14.8649955,120.8166718],
-        [14.7568703,121.0594225],
-        [14.4106185,121.025455],
-        [14.5531189,121.0207987],
-        [14.5518744,121.0576844],
-        [14.7156179,121.0419559],
-        [14.3774986,121.0453677],
-        [14.6943748,121.1080027],
-        [14.5399976,121.0186744],
-        [14.7387493,121.0574055],
-        [14.5718729,120.9819388],
-        [14.5737398,121.0412264],
-        [14.5487416,121.0261846],
-        [14.7293723,121.0603452],
-        [14.5587409,121.0544229],
-        [14.565618,120.9952641],
-        [14.6868646,120.976274],
-        [14.7343719,121.0580063],
-        [14.5799947,120.9844494],
-        [14.608748,120.9847713],
-        [14.5499969,121.0562468],
-        [14.7356164,121.0641646],
-        [14.5487416,121.0505819],
-        [14.5974934,121.0381794],
-        [14.6537447,121.0410118],
-        [14.7756243,121.0426641],
-        [14.6193695,121.056397],
-        [14.4062412,121.3325572],
-        [14.5324981,120.9965515],
-        [14.7806239,121.0648298],
-        [14.5462418,121.0786271],
-        [14.5718729,120.9843206],
-        [14.5368648,121.0035467],
-        [14.7218728,121.0129452],
-        [14.7599924,121.0299826],
-        [14.5624959,120.9885049],
-        [14.53812,120.9810591],
-        [14.7212398,121.0207772],
-        [14.6331239,121.0435653],
-        [14.5818722,120.9830976],
-        [14.5824945,121.0615253],
-        [14.7212398,121.0310555],
-        [14.5524967,121.0214424],
-        [14.6243691,121.0425353],
-        [14.5856166,121.0616326],
-        [14.7781241,121.0628557],
-        [14.5518744,121.0571909],
-        [14.5593739,121.0186744],
-        [14.5956159,121.0808587],
-        [14.7787464,121.0786915],
-        [14.5531189,121.0255623],
-        [14.4762468,121.0277939],
-        [14.584372,121.0620189],
-        [14.7162402,121.0001779],
-        [14.7124958,121.0661173],
-        [14.4993675,121.0384154],
-        [14.6074927,121.0800648],
-        [14.7312498,121.0196614],
-        [14.5818722,121.0598302],
-        [14.6168697,121.0996771],
-        [14.5487416,121.0004568],
-        [14.7756243,121.072576],
-        [14.5868719,121.0603452],
-        [14.5599961,121.0173225],
-        [14.5549965,120.9832048],
-        [14.7493708,121.0811377],
-        [14.5856166,121.0593796],
-        [14.7087407,121.1006856],
-        [14.4074965,121.0230517],
-        [14.746871,121.0646367],
-        [14.6106148,121.0802579],
-        [14.6256244,121.066525],
-        [14.5537412,120.9832907],
-        [14.7606146,121.0364199],
-        [14.5618737,120.9880114],
-        [14.6562445,121.039145],
-        [14.565618,120.9977317],
-        [14.746871,121.007967],
-        [14.5624959,120.9894919],
-        [14.6349907,121.0389519],
-        [14.5437419,120.9953928],
-        [14.7818685,121.0522556],
-        [14.5649958,121.0371065],
-        [15.1362419,120.9811664],
-        [14.4868684,121.0436511],
-        [14.7268724,120.9959078],
-        [14.6837425,121.0317421],
-        [14.5681179,120.9845781],
-        [14.7274947,121.0055423],
-        [14.4387496,121.0222363],
-        [14.5487416,121.001873],
-        [14.7474933,121.0954285]];
-            
-        var Information = [
-        ["G2860QCNVMGMR1","BCF-60","GSM"],
-        ["108ZZZBARTGFE1","BCF-39","GSM"],
-        ["P25ZZSMTPQGMR1","BCF-17","GSM"],
-        ["211ZZFLVS1GMR1","BCF-17","GSM"],
-        ["E91ZZROBFVGMR1","BCF-57","GSM"],
-        ["122ZZKIKOCGMR1","BCF-18","GSM"],
-        ["G5800MALSQGMR1","BCF-51","GSM"],
-        ["G64ZZJRDANGFE1","BCF-62","GSM"],
-        ["3851ZBSUMCGMR1","BCF-40","GSM"],
-        ["G1786SUCCDGMR1","BCF-97","GSM"],
-        ["5578ZMSNJCGMS1","BCF-63","GSM"],
-        ["P20ZZGRNBMGMR1","BCF-103","GSM"],
-        ["6072ZMRKTPGMR1","BCF-85","GSM"],
-        ["121ZZPLDNVGMR2","BCF-55","GSM"],
-        ["6635ZSMMUNGMR1","BCF-110","GSM"],
-        ["213ZZFLVS2GMR1","BCF-23","GSM"],
-        ["G2672EWBPTGMR1","BCF-90","GSM"],
-        ["G0989RBNVMGMR1","BCF-80","GSM"],
-        ["L09ZZRMAGCGMR1","BCF-23","GSM"],
-        ["G2942PBURGGMR1","BCF-40","GSM"],
-        ["G2863MKTDHGMR1","BCF-56","GSM"],
-        ["G64ZZJRDANGMR1","BCF-58","GSM"],
-        ["6021ZHJNHQGMR1","BCF-93","GSM"],
-        ["G39ZZCSBLSGMR1","BCF-43","GSM"],
-        ["6007ZSMKARGMR1","BCF-88","GSM"],
-        ["I56ZZSMFABGFE1","BCF-38","GSM"],
-        ["I31ZZSPRMEGMR1","BCF-30","GSM"],
-        ["951ZZMCUMAGMR1","BCF-50","GSM"],
-        ["G5805TGMKTGMR1","BCF-102","GSM"],
-        ["203ZZSACHTGFE1","BCF-44","GSM"],
-        ["G0910AURATGMR1","BCF-30","GSM"],
-        ["6629ZWVNGOGMR1","BCF-83","GSM"],
-        ["Z94ZZQCTV5GFE1","BCF-1","GSM"],
-        ["262ZZBGOSLGMR1","BCF-4","GSM"],
-        ["P90ZZHSBCCGMR1","BCF-53","GSM"],
-        ["3685ZJALABGMR1","BCF-117","GSM"],
-        ["W63ZZPREQUGMR1","BCF-50","GSM"],
-        ["479ZZNCLRDGFE1","BCF-32","GSM"],
-        ["462ZZPSROSGMR1","BCF-87","GSM"],
-        ["6670ZSULPKGMR1","BCF-14","GSM"],
-        ["6014ZWNLGHGMR1","BCF-122","GSM"],
-        ["G1001CMPNDGMR1","BCF-265","GSM"],
-        ["P20ZZGRNBMGMR1","BCF-61","GSM"],
-        ["U91ZZPMAHPGMR1","BCF-35","GSM"],
-        ["G21ZZOECOMGMR1","BCF-1","GSM"],
-        ["3669ZTORSVGMR1","BCF-249","GSM"],
-        ["P77ZZGMAAXGFE1","BCF-46","GSM"],
-        ["E68ZZTIMESGMR1","BCF-61","GSM"],
-        ["L69ZZOMMCIGMR1","BCF-74","GSM"],
-        ["6504ZCAPRIGFE1","BCF-258","GSM"],
-        ["Z03ZZMKTPPGMR1","BCF-106","GSM"],
-        ["G5019QCIMCGMR1","BCF-36","GSM"],
-        ["Z02ZZPRSTGGMR1","BCF-43","GSM"],
-        ["479ZZNCLRDGMR1","BCF-5","GSM"],
-        ["5135ZEVYNBGMR1","BCF-79","GSM"],
-        ["232ZZSTOWMGMR1","BCF-2","GSM"],
-        ["G2878QCMCKGMR1","BCF-239","GSM"],
-        ["6523ZMHGNYGFE1","BCF-31","GSM"],
-        ["G6699MAKPGGFE1","BCF-124","GSM"],
-        ["H25ZZMALACGMR1","BCF-29","GSM"],
-        ["L38ZZANGCCGFE1","BCF-232","GSM"],
-        ["G13ZZGLUISGMR1","BCF-274","GSM"],
-        ["Z21ZZFRVWHGMR1","BCF-43","GSM"],
-        ["G2870PQWV3GMR1","BCF-43","GSM"],
-        ["E32ZZCTLIBGMR1","BCF-194","GSM"],
-        ["3674ZLLNO2GMR1","BCF-201","GSM"],
-        ["L70ZZGABRLGMR1","BCF-75","GSM"],
-        ["G2785LUCIAGMR1","BCF-62","GSM"],
-        ["G5781PAGENGFE1","BCF-6","GSM"],
-        ["106ZZTALAZGMR1","BCF-15","GSM"],
-        ["6630ZMLYNPGMR1","BCF-56","GSM"],
-        ["P94ZZPFZRAGMR1","BCF-9","GSM"],
-        ["P56ZZPICCPGMR1","BCF-65","GSM"],
-        ["G1419LWAANGMR1","BCF-188","GSM"],
-        ["5218ZPODUMGMR1","BCF-51","GSM"],
-        ["3634ZPYTASGMR1","BCF-57","GSM"],
-        ["M61ZZIPOGCGMR1","BCF-68","GSM"],
-        ["3666ZMLGYCGMR1","BCF-20","GSM"],
-        ["L54ZZTEC1QGFE1","BCF-231","GSM"],
-        ["G2285KLNTWGMR1","BCF-40","GSM"],
-        ["P55ZZPICCDGMR1","BCF-64","GSM"],
-        ["G66ZZCGLHSGMR1","BCF-209","GSM"],
-        ["E08ZZCBNKPGMR1","BCF-28","GSM"],
-        ["G5782VETMEGFE1","BCF-25","GSM"],
-        ["Z69ZZAKINGGMR1","BCF-47","GSM"],
-        ["3673ZHULOSGFE1","BCF-222","GSM"],
-        ["L13ZZSHPWSGMR1","BCF-34","GSM"],
-        ["W02ZZPTIT0GMR1","BCF-62","GSM"],
-        ["Z33ZZPSYCHGMR1","BCF-113","GSM"],
-        ["G2971BGSL8GMR1","BCF-180","GSM"],
-        ["P83ZZNSTLEGMR1","BCF-17","GSM"],
-        ["551ZZSMGBNGMR1","BCF-81","GSM"],
-        ["5206ZSMBICGMR1","BCF-45","GSM"],
-        ["G5438LAWBTGFM1","BCF-191","GSM"],
-        ["G4522GLORIGMR1","BCF-17","GSM"],
-        ["U48ZZSOHTLGMR1","BCF-24","GSM"],
-        ["3615ZWESONGMR1","BCF-217","GSM"],
-        ["5591ZABELPGMS1","BCF-46","GSM"],
-        ["5200ZPSYLEGMR1","BCF-155","GSM"],
-        ["6502ZPPTIKGFE1","BCF-1","GSM"]]
-
+        /* populating dynamic array
+        var sites = [];
+        var siteInfo = {a:'asd', b:1, c:2};
+        sites.push(siteInfo); 
+        */
+        
+        sites = [];
+        
         var CurrentCoordinates = 0;
         var AwesomeRadioButton = "<center>"+
                                  "<div class=\"btn-row>\""+
                                  "<div class=\"btn-group\" data-toggle=\"buttons\">"+
                                  "<label class=\"btn btn-danger active\">" +
-                                    "<input type=\"radio\" name=\"options\" id=\""+Information[CurrentCoordinates][0]+"\"> Disabled" +
+                                    "<input type=\"radio\" name=\"options\" id=\"option1\"> Disabled" +
                                  "</label>" +
                                  "<label class=\"btn btn-success\">" +
-                                    "<input type=\"radio\" name=\"options\" id=\""+Information[CurrentCoordinates][0]+"\"> Enabled" +
+                                    "<input type=\"radio\" name=\"options\" id=\"option2\"> Enabled" +
                                  "</label>" +                                
                                  "</label>" +                      
                                  "</div>"+
                                  "</center>";
 
 
-        var AddTextHref = "<a class=\"title\" id=\"Information[CurrentCoordinates][0]\" style=\"cursor: pointer; cursor: hand;\">";
+        var AddTextHref = "<a class=\"title\" id=\"sites[CurrentCoordinates].siteName\" style=\"cursor: pointer; cursor: hand;\">";
         var $SiteTableBody = $('#SiteTable tbody');
-
+        
         $("#moreBtn").on("click", function(){
-            ClickMoreButton();
+            for(var i=0;i<5;i++)            
+                LoadSites(sites);
+            
+//            window.markerCluster.addMarker(window.marker);
         });
 
-        function ClickMoreButton(){
-            var $row = $("<tr> <td>"+ window.AddTextHref + Information[CurrentCoordinates][0] + "</a></td> <td>" + Information[CurrentCoordinates][1] + "</td> <td>" + Information[CurrentCoordinates][2] + "</td>"+"<td> magandang progress bar</td>"+"<td>"+window.AwesomeRadioButton+"</td>"+"</tr>");
+        function LoadSites(sites){
+            
+            var $row = $("<tr> <td>"+ window.AddTextHref + sites[CurrentCoordinates].siteName + "</a></td> <td>" + sites[CurrentCoordinates].siteId + "</td> <td>" + sites[CurrentCoordinates].technology + "</td><td>"+window.AwesomeRadioButton+"</td>"+"</tr>");
 
             $row.find('a.title').click(function(e){
                 e.preventDefault();
@@ -668,11 +474,11 @@
             var contentString = '<div id="content">'+
               '<div id="siteNotice">'+
               '</div>'+
-              '<h4 id="firstHeading" class="firstHeading">Site Name : <b>' + Information[CurrentCoordinates][0] +'</b></h4>'+
+              '<h4 id="firstHeading" class="firstHeading">Site Name : <b>' + sites[CurrentCoordinates].siteName +'</b></h4>'+
               '<div id="bodyContent">'+
-              '<h5>Site ID : ' + Information[CurrentCoordinates][1] +
+              '<h5>Site ID : ' + sites[CurrentCoordinates].siteId +
               '</h5>'+
-              '<h5>Technology : ' + Information[CurrentCoordinates][2] +
+              '<h5>Technology : ' + sites[CurrentCoordinates].technology +
               '</h5>'+
               '</div>'+
               '</div>';
@@ -680,8 +486,8 @@
             var infowindow  = new google.maps.InfoWindow({
               content: contentString
             });
-
-            PlotMarkers(infowindow,window.map, window.MoreCoordinates[CurrentCoordinates][0], window.MoreCoordinates[CurrentCoordinates][1],Information[CurrentCoordinates][0]);
+            console.log(sites[CurrentCoordinates]);
+            PlotMarkers(infowindow,window.map, window.sites[CurrentCoordinates].lat, window.sites[CurrentCoordinates].lng, sites[CurrentCoordinates].siteName);
             window.CurrentCoordinates=window.CurrentCoordinates+1;
 
             //Panel Body Always at End 
@@ -701,39 +507,57 @@
         }
 
         function ClickSiteName(siteName) {
-        var marker = FindMarkerInMarkers(siteName);
+            var marker = FindMarkerInMarkers(siteName);
 
-        if(marker!=null){
-            marker.setVisible(true);
-            window.map.setCenter(marker.getPosition());
-            window.map.setZoom(15);
-        }
-        else{
-            marker = FindMarkerInVector(siteName)
             if(marker!=null){
-                
+                    alert("Marker  Found in Markers");
+                marker.setVisible(true);
+                window.map.setCenter(marker.getPosition());
+                window.map.setZoom(15);
             }
-            else
-                alert("No Marker Such This Found");
-        }
+            else{
+                marker = FindMarkerInVector(siteName)
+                if(marker!=null){
+                    alert("Marker  Found in Vector");
+                    window.map.setCenter(marker.getPosition());
+                    window.map.setZoom(15);
+                }
+                else
+                    alert("No Marker Such This Found");
+            }
         }
 
-    $("#SiteSearchBox").keyup(function(event){
-        if(event.keyCode == 13){
-            ClickSiteName(document.getElementById("SiteSearchBox").value);
-        }
-    });
+        $("#SiteSearchBox").keyup(function(event){
+            if(event.keyCode == 13){
+                ClickSiteName(document.getElementById("SiteSearchBox").value);
+            }
+        });
 
         function FindMarkerInVector(MarkerSiteNameToFind){
-            for (var i = 0; i < Information.length; i++) {
-                if(Information[i][0]==MarkerSiteNameToFind){
-                    return Information[i][0];
+            for (var i = 0; i < sites.length; i++) {
+                if(siteInfo[i].siteName==MarkerSiteNameToFind){
+                    return siteInfo[i].siteName;
                 }
             }
             return null;
         }
+    </script>
 
+    <script>
+           var flickerAPI = "http://localhost:4000/points";
+           $.get( flickerAPI, {
+           })
 
+           .done(function( data ) {
+                $.each( data, function( i, item ) {
+
+                        var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude};
+                        sites.push(siteInfo);
+
+                });
+                for(var i=0;i<5;i++)
+                    LoadSites(sites);
+           });
     </script>
     </body>
 </html>

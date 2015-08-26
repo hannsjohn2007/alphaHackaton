@@ -22,7 +22,9 @@ router.route('/points')
         })
 
         .get(function (req, res) {
-            Site.find({}, function (err, sites) {
+            Site.find({}).
+            select('site_name site_id technology position').
+            exec(function (err, sites) {
                 if (err)
                     return handleError(err);
                 res.json(sites);
