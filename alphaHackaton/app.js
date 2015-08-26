@@ -12,10 +12,14 @@ app.set('main engine', 'html');
 app.use(express.static(path.join(__dirname, 'main')));
 
 
+var router = require('./routes/routes');
+
+app.use('/', router);
+
 // Start server
 var serverPort = 4000;
-app.listen(serverPort, function() {
-   console.log("Server started on port "+serverPort);
+app.listen(serverPort, function () {
+    console.log("Server started on port " + serverPort);
 });
 
 
