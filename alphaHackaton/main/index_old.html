@@ -41,11 +41,17 @@
           <script src="js/lte-ie7.js"></script>
         <![endif]-->
 
+
+
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="http://maps.googleapis.com/maps/api/js"></script>
+        <script
+        src="http://maps.googleapis.com/maps/api/js">
+        </script>
+
         <script>
             var markers=[];
-            var sites;
+            var MoreCoordinates;
+            var Information;
             function addMarkerToMarkers(marker){
                 window.markers.push(marker);
             }
@@ -70,7 +76,6 @@
 
         <script>
             var map;
-            var markerCluster;
         
             function initialize() {
                 var myLatlng = new google.maps.LatLng(14.7212398,121.0400891);
@@ -80,10 +85,11 @@
                     mapTypeId:google.maps.MapTypeId.ROADMAP
                 };
                 window.map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
-               
-                window.markerCluster= new MarkerClusterer(window.map, window.markers);
                 
-                
+/*                for (var i = 0; i < 5; i++){
+                    ClickMoreButton();
+                }
+//*/
             }
 
             function PlotMarkers(win,map, lat, lng, theTitle) {
@@ -95,6 +101,7 @@
                 marker.setMap(map)
 
                 marker.addListener('click', function() {
+                    //alert(contentString);
                     win.open(map, marker);
                 });
 
@@ -103,9 +110,8 @@
 
                 window.map.setCenter(marker.getPosition());
             }
-            
+
             google.maps.event.addDomListener(window, 'load', initialize);
-            
         </script>
     </head>
     <body>
@@ -242,6 +248,7 @@
     										<th>Site-Name</th>
     										<th>Site-ID</th>
     										<th>Technology</th>
+    										<th>Performance</th>
                                             <th><center>Marker Status</center></th>
     									</tr>
     								</thead>   
@@ -345,7 +352,6 @@
 
     <!-- javascripts -->
     <script src="js/jquery.js"></script>
-    <script src="js/markerclusterer.js"></script>
 	<script src="js/jquery-ui-1.10.4.min.js"></script>
     <script src="js/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
@@ -363,7 +369,6 @@
     <script src="js/fullcalendar.min.js"></script> <!-- Full Google Calendar - Calendar -->
 	<script src="assets/fullcalendar/fullcalendar/fullcalendar.js"></script>
     <!--script for this page only-->
-
     <script src="js/calendar-custom.js"></script>
 	<script src="js/jquery.rateit.min.js"></script>
     <!-- custom select -->
@@ -427,42 +432,31 @@
 	            }
 	        });
 	    });
-        /* populating dynamic array
-        var sites = [];
-        var siteInfo = {a:'asd', b:1, c:2};
-        sites.push(siteInfo); 
-        */
-        
-        sites = [];
-        
+
         var CurrentCoordinates = 0;
         var AwesomeRadioButton = "<center>"+
                                  "<div class=\"btn-row>\""+
                                  "<div class=\"btn-group\" data-toggle=\"buttons\">"+
                                  "<label class=\"btn btn-danger active\">" +
-                                    "<input type=\"radio\" name=\"options\" id=\"option1\"> Disabled" +
+                                    "<input type=\"radio\" name=\"options\" id=\""+Information[CurrentCoordinates][0]+"\"> Disabled" +
                                  "</label>" +
                                  "<label class=\"btn btn-success\">" +
-                                    "<input type=\"radio\" name=\"options\" id=\"option2\"> Enabled" +
+                                    "<input type=\"radio\" name=\"options\" id=\""+Information[CurrentCoordinates][0]+"\"> Enabled" +
                                  "</label>" +                                
                                  "</label>" +                      
                                  "</div>"+
                                  "</center>";
 
 
-        var AddTextHref = "<a class=\"title\" id=\"sites[CurrentCoordinates].siteName\" style=\"cursor: pointer; cursor: hand;\">";
+        var AddTextHref = "<a class=\"title\" id=\"Information[CurrentCoordinates][0]\" style=\"cursor: pointer; cursor: hand;\">";
         var $SiteTableBody = $('#SiteTable tbody');
-        
+
         $("#moreBtn").on("click", function(){
-            for(var i=0;i<5;i++)            
-                LoadSites(sites);
-            
-            window.markerCluster.addMarkers(window.markers,true);
+            ClickMoreButton();
         });
 
-        function LoadSites(sites){
-            
-            var $row = $("<tr> <td>"+ window.AddTextHref + sites[CurrentCoordinates].siteName + "</a></td> <td>" + sites[CurrentCoordinates].siteId + "</td> <td>" + sites[CurrentCoordinates].technology + "</td><td>"+window.AwesomeRadioButton+"</td>"+"</tr>");
+        function ClickMoreButton(){
+            var $row = $("<tr> <td>"+ window.AddTextHref + Information[CurrentCoordinates][0] + "</a></td> <td>" + Information[CurrentCoordinates][1] + "</td> <td>" + Information[CurrentCoordinates][2] + "</td>"+"<td> magandang progress bar</td>"+"<td>"+window.AwesomeRadioButton+"</td>"+"</tr>");
 
             $row.find('a.title').click(function(e){
                 e.preventDefault();
@@ -474,11 +468,11 @@
             var contentString = '<div id="content">'+
               '<div id="siteNotice">'+
               '</div>'+
-              '<h4 id="firstHeading" class="firstHeading">Site Name : <b>' + sites[CurrentCoordinates].siteName +'</b></h4>'+
+              '<h4 id="firstHeading" class="firstHeading">Site Name : <b>' + Information[CurrentCoordinates][0] +'</b></h4>'+
               '<div id="bodyContent">'+
-              '<h5>Site ID : ' + sites[CurrentCoordinates].siteId +
+              '<h5>Site ID : ' + Information[CurrentCoordinates][1] +
               '</h5>'+
-              '<h5>Technology : ' + sites[CurrentCoordinates].technology +
+              '<h5>Technology : ' + Information[CurrentCoordinates][2] +
               '</h5>'+
               '</div>'+
               '</div>';
@@ -487,7 +481,7 @@
               content: contentString
             });
 
-            PlotMarkers(infowindow,window.map, window.sites[CurrentCoordinates].lat, window.sites[CurrentCoordinates].lng, sites[CurrentCoordinates].siteName);
+            PlotMarkers(infowindow,window.map, window.MoreCoordinates[CurrentCoordinates][0], window.MoreCoordinates[CurrentCoordinates][1],Information[CurrentCoordinates][0]);
             window.CurrentCoordinates=window.CurrentCoordinates+1;
 
             //Panel Body Always at End 
@@ -507,59 +501,66 @@
         }
 
         function ClickSiteName(siteName) {
-            var marker = FindMarkerInMarkers(siteName);
+        var marker = FindMarkerInMarkers(siteName);
 
+        if(marker!=null){
+            marker.setVisible(true);
+            window.map.setCenter(marker.getPosition());
+            window.map.setZoom(15);
+        }
+        else{
+            marker = FindMarkerInVector(siteName)
             if(marker!=null){
-                    alert("Marker  Found in Markers");
-                marker.setVisible(true);
-                window.map.setCenter(marker.getPosition());
-                window.map.setZoom(15);
+                
             }
-            else{
-                alert("Marker  Found in Vector");
-                marker = FindMarkerInVector(siteName)
-                if(marker!=null){
-
-                    window.map.setCenter(marker.getPosition());
-                    window.map.setZoom(15);
-                }
-                else
-                    alert("No Marker Such This Found");
-            }
+            else
+                alert("No Marker Such This Found");
+        }
         }
 
-        $("#SiteSearchBox").keyup(function(event){
-            if(event.keyCode == 13){
-                ClickSiteName(document.getElementById("SiteSearchBox").value);
-            }
-        });
+    $("#SiteSearchBox").keyup(function(event){
+        if(event.keyCode == 13){
+            ClickSiteName(document.getElementById("SiteSearchBox").value);
+        }
+    });
 
         function FindMarkerInVector(MarkerSiteNameToFind){
-            for (var i = 0; i < sites.length; i++) {
-
-                if(siteInfo[i].siteName==MarkerSiteNameToFind){
-                    return siteInfo[i].siteName;
+            for (var i = 0; i < Information.length; i++) {
+                if(Information[i][0]==MarkerSiteNameToFind){
+                    return Information[i][0];
                 }
             }
             return null;
         }
+
+
+
     </script>
 
-    <script>
-           var flickerAPI = "http://localhost:4000/points";
-           $.get( flickerAPI, {
-           })
+        <script>
+            (function() {
 
-           .done(function( data ) {
-                $.each( data, function( i, item ) {
+               var flickerAPI = "http://localhost:4000/points";
+               $.getJSON( flickerAPI, {
+                   tags: "Technology", //number of the page, and number of items in the page
+                   tagmode: "any",
+                   format: "json"
+               })
 
-                        var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude};
-                        sites.push(siteInfo);
+               .done(function( data ) {
 
-                });
-                for(var i=0;i<5;i++)
-                    LoadSites(sites);
-           });
-    </script>
+                   $.each( data, function( i, item ) {
+                       Information[i][2]=item.technology;
+                   });
+                   for (var i = 0; i < 5; i++){
+                        ClickMoreButton();
+                    }
+
+               });
+
+
+            })();
+        </script>
+
     </body>
 </html>
