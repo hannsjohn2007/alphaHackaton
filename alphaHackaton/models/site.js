@@ -8,6 +8,4 @@ db.once('open', function (callback) {
   console.log("DB Connected");
 });
 
-var SiteSchema   = new Schema({}, {collection: 'sites'});
-
-module.exports = mongoose.model('Site', SiteSchema);
+module.exports = mongoose.model('Site', new Schema());

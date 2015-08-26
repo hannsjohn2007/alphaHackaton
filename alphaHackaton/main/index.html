@@ -225,7 +225,6 @@
                             <div class="panel-actions">
                                 <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
                                 <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
-                                <a href="index.html#" class="btn-close"><i class="fa fa-times"></i></a>
                             </div>
     						<div class="panel-heading">
     							<h2><i class="fa fa-flag-o red"></i><strong>Site Navigation and Controls</strong></h2>
@@ -454,7 +453,7 @@
         var $SiteTableBody = $('#SiteTable tbody');
         
         $("#moreBtn").on("click", function(){
-            for(var i=0;i<5;i++)            
+            for(var i=0;i<100;i++)            
                 LoadSites(sites);
             
             window.markerCluster.addMarkers(window.markers,true);
@@ -466,6 +465,7 @@
 
             $row.find('a.title').click(function(e){
                 e.preventDefault();
+                ClearAllMarkersAnimation();
                 ClickSiteName( $(this).text() );
             });
 
@@ -510,6 +510,7 @@
 
             if(marker!=null){
                 marker.setVisible(true);
+                marker.setAnimation(google.maps.Animation.BOUNCE)
                 window.map.setCenter(marker.getPosition());
                 window.map.setZoom(15);
             }
@@ -519,6 +520,7 @@
 
         $("#SiteSearchBox").keyup(function(event){
             if(event.keyCode == 13){
+                ClearAllMarkersAnimation();
                 ClickSiteName(document.getElementById("SiteSearchBox").value);
             }
         });
@@ -549,24 +551,42 @@
             }
             return false;
         }
-    </script>
 
-    <script>
-           var flickerAPI = "http://localhost:4000/points";
-           $.get( flickerAPI, {
-           })
+        var flickerAPI = "http://localhost:4000/points";
+       $.get( flickerAPI, {})
 
            .done(function( data ) {
                 $.each( data, function( i, item ) {
-
-                        var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude};
-                        sites.push(siteInfo);
+                    var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude};
+                    sites.push(siteInfo);
 
                 });
-                for(var i=0;i<5;i++)
+                for(var i=0;i<100;i++)
                     LoadSites(sites);
                 window.markerCluster.addMarkers(window.markers,true);
            });
+
+           var isPanelMinimize=0;
+        $(".btn-minimize").click(function(){
+            if(isPanelMinimize==1){
+                $(".panel-body").collapse('hide');
+                isPanelMinimize=0;
+            }
+            else{
+                $(".panel-body").collapse('show');
+                isPanelMinimize=1;
+            }
+        });
+
+        function ClearAllMarkersAnimation(){
+            var i=0;
+            while(i<(window.markers).length){
+                    (window.markers[i]).setAnimation(null);
+                    i++;
+            }
+            
+        }
+
     </script>
     </body>
 </html>
