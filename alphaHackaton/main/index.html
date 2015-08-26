@@ -1,5 +1,739 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Creative - Bootstrap 3 Responsive Admin Template">
+        <meta name="author" content="GeeksLabs">
+        <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
+        <link rel="shortcut icon" href="img/favicon.png">
+
+        <title>Alpha Hackathon</title>
+
+        <!-- Bootstrap CSS -->    
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- bootstrap theme -->
+        <link href="css/bootstrap-theme.css" rel="stylesheet">
+        <!--external css-->
+        <!-- font icon -->
+        <link href="css/elegant-icons-style.css" rel="stylesheet" />
+        <link href="css/font-awesome.min.css" rel="stylesheet" />    
+        <!-- full calendar css-->
+        <link href="assets/fullcalendar/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet" />
+    	<link href="assets/fullcalendar/fullcalendar/fullcalendar.css" rel="stylesheet" />
+        <!-- easy pie chart-->
+        <link href="assets/jquery-easy-pie-chart/jquery.easy-pie-chart.css" rel="stylesheet" type="text/css" media="screen"/>
+        <!-- owl carousel -->
+        <link rel="stylesheet" href="css/owl.carousel.css" type="text/css">
+    	<link href="css/jquery-jvectormap-1.2.2.css" rel="stylesheet">
+        <!-- Custom styles -->
+    	<link rel="stylesheet" href="css/fullcalendar.css">
+    	<link href="css/widgets.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/style-responsive.css" rel="stylesheet" />
+    	<link href="css/xcharts.min.css" rel=" stylesheet">	
+    	<link href="css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
+        <!--[if lt IE 9]>
+          <script src="js/html5shiv.js"></script>
+          <script src="js/respond.min.js"></script>
+          <script src="js/lte-ie7.js"></script>
+        <![endif]-->
+
+        <script
+        src="http://maps.googleapis.com/maps/api/js">
+        </script>
+
+        <script>
+            var markers=[];
+
+            function addMarkerToMarkers(marker){
+                window.markers.push(marker);
+            }
+
+            function FindMarkerInMarkers(MarkerSiteNameToFind){
+                for (var i = 0; i < markers.length; i++) {
+                    if(markers[i].title==MarkerSiteNameToFind)
+                        return markers[i];
+                }
+            }
+
+            function hideMarkers() {
+                while(window.markers.length){
+                    window.markers.pop().setMap(null);
+                }
+            }
+
+            $("#RemoveAllMarkers").on("click", function(){
+                hideMarkers();
+            });        
+        </script>
+
+        <script>
+            var map;
+        
+            function initialize() {
+                var myLatlng = new google.maps.LatLng(14.7212398,121.0400891);
+                var mapProp = {
+                    center: myLatlng,
+                    zoom:12,
+                    mapTypeId:google.maps.MapTypeId.ROADMAP
+                };
+                window.map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+                
+                for (var i = 0; i < 5; i++){
+                    ClickMoreButton();
+                }
+            }
+
+            function PlotMarkers(win,map, lat, lng, theTitle) {
+                var myLatlng = new google.maps.LatLng(lat, lng);
+                var marker = new google.maps.Marker({
+                    position: myLatlng,
+                    title:theTitle
+                });
+                marker.setMap(map)
+
+                marker.addListener('click', function() {
+                    //alert(contentString);
+                    win.open(map, marker);
+                });
+
+                addMarkerToMarkers(marker);
+                window.markers.push(marker);
+
+                window.map.setCenter(marker.getPosition());
+            }
+
+            google.maps.event.addDomListener(window, 'load', initialize);
+        </script>
+    </head>
     <body>
-        HEY HEY!!
+        <!-- container section start -->
+        <section id="container" class="">
+
+        <header class="header dark-bg">
+            <div class="toggle-nav">
+                <div class="icon-reorder tooltips" data-original-title="Toggle Navigation" data-placement="bottom"></div>
+            </div>
+
+            <!--logo start-->
+            <a href="index.html" class="logo">ALPHA <span class="lite">HACKATHON</span></a>
+            <!--logo end-->
+
+            <div class="nav search-row" id="top_menu">
+                <!--  search form start -->
+                <ul class="nav top-menu">                    
+                    <li>
+                        <form class="navbar-form">
+                            <input class="form-control" placeholder="Search" type="text">
+                        </form>
+                    </li>                    
+                </ul>
+                <!--  search form end -->                
+            </div>
+
+            <div class="top-nav notification-row">                
+                <!-- notificatoin dropdown start-->
+                <ul class="nav pull-right top-menu">
+                    <!-- user login dropdown start-->
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="profile-ava">
+                                <img alt="" src="img/avatar1_small.jpg">
+                            </span>
+                            <span class="username">Administrator</span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu extended logout">
+                            <div class="log-arrow-up"></div>
+                            <li class="eborder-top">
+                                <a href="#"><i class="icon_profile"></i> My Profile</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon_mail_alt"></i> My Inbox</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon_clock_alt"></i> Timeline</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon_chat_alt"></i> Chats</a>
+                            </li>
+                            <li>
+                                <a href="login.html"><i class="icon_key_alt"></i> Log Out</a>
+                            </li>
+                            <li>
+                                <a href="documentation.html"><i class="icon_key_alt"></i> Documentation</a>
+                            </li>
+                            <li>
+                                <a href="documentation.html"><i class="icon_key_alt"></i> Documentation</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- user login dropdown end -->
+                </ul>
+                <!-- notificatoin dropdown end-->
+            </div>
+        </header>      
+        <!--header end-->
+
+        <!--sidebar start-->
+        <aside>
+            <div id="sidebar"  class="nav-collapse ">
+                <!-- sidebar menu start-->
+                <ul class="sidebar-menu">                
+                    <li class="active">
+                        <a class="" href="index.html">
+                            <i class="icon_house_alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+                <!-- sidebar menu end-->
+            </div>
+        </aside>
+        <!--sidebar end-->
+      
+        <!--main content start-->
+        <section id="main-content">
+            <section class="wrapper">            
+                <!--overview start-->
+			    <div class="row">
+				    <div class="col-lg-11">
+					    <h3 class="page-header"><i class="fa fa-laptop"></i> Alpha Hackathon Blue Print</h3>
+					    <ol class="breadcrumb">
+						    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+						    <li><i class="fa fa-laptop"></i>Site Map</li>						  	
+					    </ol>
+				    </div>
+                </div>
+                <div class="row">
+    		        <div class="col-lg-11 col-md-12">
+    					<div class="panel panel-default">
+    						<div class="panel-heading">
+    							<h2><i class="fa fa-map-marker red"></i><strong>World Map</strong></h2>
+    						</div>
+    						<div class="panel-body-map">
+    							<div id="googleMap" style="width:1270px; height:380px;"></div>	
+    						</div>
+    					</div>
+    				</div>
+                </div>  
+			    <div class="row">   	
+    				<div class="col-lg-11 col-md-9">	
+    					<div class="panel panel-default">
+                            <div class="panel-actions">
+                                <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                                <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                                <a href="index.html#" class="btn-close"><i class="fa fa-times"></i></a>
+                            </div>
+    						<div class="panel-heading">
+    							<h2><i class="fa fa-flag-o red"></i><strong>Site Navigation and Controls</strong></h2>
+                                <div class="nav search-row" style="float:right;">
+                                    <li>
+                                          <input class="form-control input-sm m-bot15" type="text" placeholder="search Site-Name" id="SiteSearchBox">
+                                    </li>                    
+                                </div>
+    						</div>
+    						<div class="panel-body" id="PanelBody" style="max-height: 500px; overflow-y: scroll;">
+    							<table class="table bootstrap-datatable countries" id="SiteTable">
+    								<thead>
+    									<tr>
+    										<th>Site-Name</th>
+    										<th>Site-ID</th>
+    										<th>Technology</th>
+    										<th>Performance</th>
+                                            <th><center>Marker Status</center></th>
+    									</tr>
+    								</thead>   
+    								<tbody>
+    								</tbody>
+    							</table>
+                                <button type="submit" class="btn btn-primary btn-lg btn-block" id="moreBtn">Navigate More Sites</button>
+                                <button type="button" class="btn btn-danger btn-xs btn-block" id="ClearBtn">Clear Markers</button>
+    						</div>
+    					</div>	
+    				</div><!--/col-->			
+                </div>
+                <!-- project team & activity start -->
+                <div class="row">
+                    <div class="col-lg-11">
+                        <!--Project Activity start-->
+                        <section class="panel">
+                            <div class="panel-body progress-panel">
+                                <div class="row">
+                                    <div class="col-lg-8 task-progress pull-left">
+                                        <h1>ALPHA HACKATHON MEMBERS</h1>                                  
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <span class="profile-ava pull-right">
+                                                <img alt="" class="simple" src="img/avatar1_small.jpg">
+                                                Administrator
+                                        </span>                                
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table table-hover personal-task">
+                                <tbody>
+                                    <tr>
+                                        <td>Back End Developer</td>
+                                        <td>
+                                            Adrian William Tan
+                                        </td>
+                                        <td>
+                                            <span class="profile-ava">
+                                                <img alt="" class="simple" src="img/Members/AWT.jpg" height=60px>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Front End Developer</td>
+                                            <td>
+                                                Diane Rivera
+                                            </td>
+                                        <td>
+                                            <img alt="" class="simple" src="img/Members/DR.jpg" height=60px>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Front End Developer</td>
+                                        <td>
+                                            Joseph Angelo Samuel Dulay
+                                        </td>
+                                        <td>
+                                            <img alt="" class="simple" src="img/Members/JAS.jpg" height=60px>
+                                        </td>
+                                    </tr>                              
+                                    <tr>
+                                        <td>Back End Developer</td>
+                                        <td>
+                                            Max Villegas
+                                        </td>
+                                        <td>
+                                            <span class="profile-ava">
+                                                <img alt="" class="simple" src="img/Members/MV.jpg" height=60px>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Front End Developer</td>
+                                        <td>
+                                            Nikkol Morales
+                                        </td>
+                                        <td>
+                                            <img alt="" class="simple" src="img/Members/NM.jpg" height=60px>
+                                        </td>
+                                    </tr>                              
+                                    <tr>
+                                        <td>Back End Developer</td>
+                                        <td>
+                                            Jono Rafael Obiniana
+                                        </td>
+                                        <td>
+                                            <img alt="" class="simple" src="img/Members/JRO.jpg" height=60px>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                        <!--Project Activity end-->
+                    </div>
+                </div><br><br>
+            </section>
+        </section>
+        <!--main content end-->
+    </section>
+
+    <!-- javascripts -->
+    <script src="js/jquery.js"></script>
+	<script src="js/jquery-ui-1.10.4.min.js"></script>
+    <script src="js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
+    <!-- bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- nice scroll -->
+    <script src="js/jquery.scrollTo.min.js"></script>
+    <script src="js/jquery.nicescroll.js" type="text/javascript"></script>
+    <!-- charts scripts -->
+    <script src="assets/jquery-knob/js/jquery.knob.js"></script>
+    <script src="js/jquery.sparkline.js" type="text/javascript"></script>
+    <script src="assets/jquery-easy-pie-chart/jquery.easy-pie-chart.js"></script>
+    <script src="js/owl.carousel.js" ></script>
+    <!-- jQuery full calendar -->
+    <script src="js/fullcalendar.min.js"></script> <!-- Full Google Calendar - Calendar -->
+	<script src="assets/fullcalendar/fullcalendar/fullcalendar.js"></script>
+    <!--script for this page only-->
+    <script src="http://maps.googleapis.com/maps/api/js"></script>
+    <script src="js/calendar-custom.js"></script>
+	<script src="js/jquery.rateit.min.js"></script>
+    <!-- custom select -->
+    <script src="js/jquery.customSelect.min.js" ></script>
+	<script src="assets/chart-master/Chart.js"></script>
+   
+    <!--custome script for all page-->
+    <script src="js/scripts.js"></script>
+    <!-- custom script for this page-->
+    <script src="js/sparkline-chart.js"></script>
+    <script src="js/easy-pie-chart.js"></script>
+	<script src="js/jquery-jvectormap-1.2.2.min.js"></script>
+	<script src="js/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="js/xcharts.min.js"></script>
+	<script src="js/jquery.autosize.min.js"></script>
+	<script src="js/jquery.placeholder.min.js"></script>
+	<script src="js/gdp-data.js"></script>	
+	<script src="js/morris.min.js"></script>
+	<script src="js/sparklines.js"></script>	
+	<script src="js/charts.js"></script>
+	<script src="js/jquery.slimscroll.min.js"></script>
+    <script>
+        //knob
+        $(function() {
+        $(".knob").knob({
+            'draw' : function () { 
+                    $(this.i).val(this.cv + '%')
+                }
+            })
+        });
+
+        //carousel
+        $(document).ready(function() {
+            $("#owl-slider").owlCarousel({
+                navigation : true,
+                slideSpeed : 300,
+                paginationSpeed : 400,
+                singleItem : true
+            });
+        });
+        //custom select box
+
+        $(function(){
+            $('select.styled').customSelect();
+        });
+	  
+	   /* ---------- Map ---------- */
+	    $(function(){
+	        $('#map').vectorMap({
+	            map: 'world_mill_en',
+	            series: {
+    	            regions: [{
+    	               values: gdpData,
+    	               scale: ['#000', '#000'],
+    	               normalizeFunction: 'polynomial'
+    	            }]
+	            },
+		        backgroundColor: '#eef3f7',
+	            onLabelShow: function(e, el, code){
+	               el.html(el.html()+' (GDP - '+gdpData[code]+')');
+	            }
+	        });
+	    });
+
+        var MoreCoordinates = [
+        [14.7212398, 121.0400891],
+        [14.7343719, 121.0572338],
+        [14.4649923,121.0180306],
+        [14.6849978,121.0954285],
+        [14.7362494,121.0559678],
+        [14.7624922,121.064465],
+        [14.6574998,120.9611034],
+        [14.7268724,121.0532212],
+        [14.8649955,120.8166718],
+        [14.7568703,121.0594225],
+        [14.4106185,121.025455],
+        [14.5531189,121.0207987],
+        [14.5518744,121.0576844],
+        [14.7156179,121.0419559],
+        [14.3774986,121.0453677],
+        [14.6943748,121.1080027],
+        [14.5399976,121.0186744],
+        [14.7387493,121.0574055],
+        [14.5718729,120.9819388],
+        [14.5737398,121.0412264],
+        [14.5487416,121.0261846],
+        [14.7293723,121.0603452],
+        [14.5587409,121.0544229],
+        [14.565618,120.9952641],
+        [14.6868646,120.976274],
+        [14.7343719,121.0580063],
+        [14.5799947,120.9844494],
+        [14.608748,120.9847713],
+        [14.5499969,121.0562468],
+        [14.7356164,121.0641646],
+        [14.5487416,121.0505819],
+        [14.5974934,121.0381794],
+        [14.6537447,121.0410118],
+        [14.7756243,121.0426641],
+        [14.6193695,121.056397],
+        [14.4062412,121.3325572],
+        [14.5324981,120.9965515],
+        [14.7806239,121.0648298],
+        [14.5462418,121.0786271],
+        [14.5718729,120.9843206],
+        [14.5368648,121.0035467],
+        [14.7218728,121.0129452],
+        [14.7599924,121.0299826],
+        [14.5624959,120.9885049],
+        [14.53812,120.9810591],
+        [14.7212398,121.0207772],
+        [14.6331239,121.0435653],
+        [14.5818722,120.9830976],
+        [14.5824945,121.0615253],
+        [14.7212398,121.0310555],
+        [14.5524967,121.0214424],
+        [14.6243691,121.0425353],
+        [14.5856166,121.0616326],
+        [14.7781241,121.0628557],
+        [14.5518744,121.0571909],
+        [14.5593739,121.0186744],
+        [14.5956159,121.0808587],
+        [14.7787464,121.0786915],
+        [14.5531189,121.0255623],
+        [14.4762468,121.0277939],
+        [14.584372,121.0620189],
+        [14.7162402,121.0001779],
+        [14.7124958,121.0661173],
+        [14.4993675,121.0384154],
+        [14.6074927,121.0800648],
+        [14.7312498,121.0196614],
+        [14.5818722,121.0598302],
+        [14.6168697,121.0996771],
+        [14.5487416,121.0004568],
+        [14.7756243,121.072576],
+        [14.5868719,121.0603452],
+        [14.5599961,121.0173225],
+        [14.5549965,120.9832048],
+        [14.7493708,121.0811377],
+        [14.5856166,121.0593796],
+        [14.7087407,121.1006856],
+        [14.4074965,121.0230517],
+        [14.746871,121.0646367],
+        [14.6106148,121.0802579],
+        [14.6256244,121.066525],
+        [14.5537412,120.9832907],
+        [14.7606146,121.0364199],
+        [14.5618737,120.9880114],
+        [14.6562445,121.039145],
+        [14.565618,120.9977317],
+        [14.746871,121.007967],
+        [14.5624959,120.9894919],
+        [14.6349907,121.0389519],
+        [14.5437419,120.9953928],
+        [14.7818685,121.0522556],
+        [14.5649958,121.0371065],
+        [15.1362419,120.9811664],
+        [14.4868684,121.0436511],
+        [14.7268724,120.9959078],
+        [14.6837425,121.0317421],
+        [14.5681179,120.9845781],
+        [14.7274947,121.0055423],
+        [14.4387496,121.0222363],
+        [14.5487416,121.001873],
+        [14.7474933,121.0954285]];
+            
+        var Information = [
+        ["G2860QCNVMGMR1","BCF-60","GSM"],
+        ["108ZZZBARTGFE1","BCF-39","GSM"],
+        ["P25ZZSMTPQGMR1","BCF-17","GSM"],
+        ["211ZZFLVS1GMR1","BCF-17","GSM"],
+        ["E91ZZROBFVGMR1","BCF-57","GSM"],
+        ["122ZZKIKOCGMR1","BCF-18","GSM"],
+        ["G5800MALSQGMR1","BCF-51","GSM"],
+        ["G64ZZJRDANGFE1","BCF-62","GSM"],
+        ["3851ZBSUMCGMR1","BCF-40","GSM"],
+        ["G1786SUCCDGMR1","BCF-97","GSM"],
+        ["5578ZMSNJCGMS1","BCF-63","GSM"],
+        ["P20ZZGRNBMGMR1","BCF-103","GSM"],
+        ["6072ZMRKTPGMR1","BCF-85","GSM"],
+        ["121ZZPLDNVGMR2","BCF-55","GSM"],
+        ["6635ZSMMUNGMR1","BCF-110","GSM"],
+        ["213ZZFLVS2GMR1","BCF-23","GSM"],
+        ["G2672EWBPTGMR1","BCF-90","GSM"],
+        ["G0989RBNVMGMR1","BCF-80","GSM"],
+        ["L09ZZRMAGCGMR1","BCF-23","GSM"],
+        ["G2942PBURGGMR1","BCF-40","GSM"],
+        ["G2863MKTDHGMR1","BCF-56","GSM"],
+        ["G64ZZJRDANGMR1","BCF-58","GSM"],
+        ["6021ZHJNHQGMR1","BCF-93","GSM"],
+        ["G39ZZCSBLSGMR1","BCF-43","GSM"],
+        ["6007ZSMKARGMR1","BCF-88","GSM"],
+        ["I56ZZSMFABGFE1","BCF-38","GSM"],
+        ["I31ZZSPRMEGMR1","BCF-30","GSM"],
+        ["951ZZMCUMAGMR1","BCF-50","GSM"],
+        ["G5805TGMKTGMR1","BCF-102","GSM"],
+        ["203ZZSACHTGFE1","BCF-44","GSM"],
+        ["G0910AURATGMR1","BCF-30","GSM"],
+        ["6629ZWVNGOGMR1","BCF-83","GSM"],
+        ["Z94ZZQCTV5GFE1","BCF-1","GSM"],
+        ["262ZZBGOSLGMR1","BCF-4","GSM"],
+        ["P90ZZHSBCCGMR1","BCF-53","GSM"],
+        ["3685ZJALABGMR1","BCF-117","GSM"],
+        ["W63ZZPREQUGMR1","BCF-50","GSM"],
+        ["479ZZNCLRDGFE1","BCF-32","GSM"],
+        ["462ZZPSROSGMR1","BCF-87","GSM"],
+        ["6670ZSULPKGMR1","BCF-14","GSM"],
+        ["6014ZWNLGHGMR1","BCF-122","GSM"],
+        ["G1001CMPNDGMR1","BCF-265","GSM"],
+        ["P20ZZGRNBMGMR1","BCF-61","GSM"],
+        ["U91ZZPMAHPGMR1","BCF-35","GSM"],
+        ["G21ZZOECOMGMR1","BCF-1","GSM"],
+        ["3669ZTORSVGMR1","BCF-249","GSM"],
+        ["P77ZZGMAAXGFE1","BCF-46","GSM"],
+        ["E68ZZTIMESGMR1","BCF-61","GSM"],
+        ["L69ZZOMMCIGMR1","BCF-74","GSM"],
+        ["6504ZCAPRIGFE1","BCF-258","GSM"],
+        ["Z03ZZMKTPPGMR1","BCF-106","GSM"],
+        ["G5019QCIMCGMR1","BCF-36","GSM"],
+        ["Z02ZZPRSTGGMR1","BCF-43","GSM"],
+        ["479ZZNCLRDGMR1","BCF-5","GSM"],
+        ["5135ZEVYNBGMR1","BCF-79","GSM"],
+        ["232ZZSTOWMGMR1","BCF-2","GSM"],
+        ["G2878QCMCKGMR1","BCF-239","GSM"],
+        ["6523ZMHGNYGFE1","BCF-31","GSM"],
+        ["G6699MAKPGGFE1","BCF-124","GSM"],
+        ["H25ZZMALACGMR1","BCF-29","GSM"],
+        ["L38ZZANGCCGFE1","BCF-232","GSM"],
+        ["G13ZZGLUISGMR1","BCF-274","GSM"],
+        ["Z21ZZFRVWHGMR1","BCF-43","GSM"],
+        ["G2870PQWV3GMR1","BCF-43","GSM"],
+        ["E32ZZCTLIBGMR1","BCF-194","GSM"],
+        ["3674ZLLNO2GMR1","BCF-201","GSM"],
+        ["L70ZZGABRLGMR1","BCF-75","GSM"],
+        ["G2785LUCIAGMR1","BCF-62","GSM"],
+        ["G5781PAGENGFE1","BCF-6","GSM"],
+        ["106ZZTALAZGMR1","BCF-15","GSM"],
+        ["6630ZMLYNPGMR1","BCF-56","GSM"],
+        ["P94ZZPFZRAGMR1","BCF-9","GSM"],
+        ["P56ZZPICCPGMR1","BCF-65","GSM"],
+        ["G1419LWAANGMR1","BCF-188","GSM"],
+        ["5218ZPODUMGMR1","BCF-51","GSM"],
+        ["3634ZPYTASGMR1","BCF-57","GSM"],
+        ["M61ZZIPOGCGMR1","BCF-68","GSM"],
+        ["3666ZMLGYCGMR1","BCF-20","GSM"],
+        ["L54ZZTEC1QGFE1","BCF-231","GSM"],
+        ["G2285KLNTWGMR1","BCF-40","GSM"],
+        ["P55ZZPICCDGMR1","BCF-64","GSM"],
+        ["G66ZZCGLHSGMR1","BCF-209","GSM"],
+        ["E08ZZCBNKPGMR1","BCF-28","GSM"],
+        ["G5782VETMEGFE1","BCF-25","GSM"],
+        ["Z69ZZAKINGGMR1","BCF-47","GSM"],
+        ["3673ZHULOSGFE1","BCF-222","GSM"],
+        ["L13ZZSHPWSGMR1","BCF-34","GSM"],
+        ["W02ZZPTIT0GMR1","BCF-62","GSM"],
+        ["Z33ZZPSYCHGMR1","BCF-113","GSM"],
+        ["G2971BGSL8GMR1","BCF-180","GSM"],
+        ["P83ZZNSTLEGMR1","BCF-17","GSM"],
+        ["551ZZSMGBNGMR1","BCF-81","GSM"],
+        ["5206ZSMBICGMR1","BCF-45","GSM"],
+        ["G5438LAWBTGFM1","BCF-191","GSM"],
+        ["G4522GLORIGMR1","BCF-17","GSM"],
+        ["U48ZZSOHTLGMR1","BCF-24","GSM"],
+        ["3615ZWESONGMR1","BCF-217","GSM"],
+        ["5591ZABELPGMS1","BCF-46","GSM"],
+        ["5200ZPSYLEGMR1","BCF-155","GSM"],
+        ["6502ZPPTIKGFE1","BCF-1","GSM"]]
+
+        var CurrentCoordinates = 0;
+        var AwesomeRadioButton = "<center>"+
+                                 "<div class=\"btn-row>\""+
+                                 "<div class=\"btn-group\" data-toggle=\"buttons\">"+
+                                 "<label class=\"btn btn-danger active\">" +
+                                    "<input type=\"radio\" name=\"options\" id=\""+Information[CurrentCoordinates][0]+"\"> Disabled" +
+                                 "</label>" +
+                                 "<label class=\"btn btn-success\">" +
+                                    "<input type=\"radio\" name=\"options\" id=\""+Information[CurrentCoordinates][0]+"\"> Enabled" +
+                                 "</label>" +                                
+                                 "</label>" +                      
+                                 "</div>"+
+                                 "</center>";
+
+
+        var AddTextHref = "<a class=\"title\" id=\"Information[CurrentCoordinates][0]\" style=\"cursor: pointer; cursor: hand;\">";
+        var $SiteTableBody = $('#SiteTable tbody');
+
+        $("#moreBtn").on("click", function(){
+            ClickMoreButton();
+        });
+
+        function ClickMoreButton(){
+            var $row = $("<tr> <td>"+ window.AddTextHref + Information[CurrentCoordinates][0] + "</a></td> <td>" + Information[CurrentCoordinates][1] + "</td> <td>" + Information[CurrentCoordinates][2] + "</td>"+"<td> magandang progress bar</td>"+"<td>"+window.AwesomeRadioButton+"</td>"+"</tr>");
+
+            $row.find('a.title').click(function(e){
+                e.preventDefault();
+                ClickSiteName( $(this).text() );
+            });
+
+            $SiteTableBody.append($row);        
+            
+            var contentString = '<div id="content">'+
+              '<div id="siteNotice">'+
+              '</div>'+
+              '<h4 id="firstHeading" class="firstHeading">Site Name : <b>' + Information[CurrentCoordinates][0] +'</b></h4>'+
+              '<div id="bodyContent">'+
+              '<h5>Site ID : ' + Information[CurrentCoordinates][1] +
+              '</h5>'+
+              '<h5>Technology : ' + Information[CurrentCoordinates][2] +
+              '</h5>'+
+              '</div>'+
+              '</div>';
+
+            var infowindow  = new google.maps.InfoWindow({
+              content: contentString
+            });
+
+            PlotMarkers(infowindow,window.map, window.MoreCoordinates[CurrentCoordinates][0], window.MoreCoordinates[CurrentCoordinates][1],Information[CurrentCoordinates][0]);
+            window.CurrentCoordinates=window.CurrentCoordinates+1;
+
+            //Panel Body Always at End 
+            var elem = document.getElementById('PanelBody');
+            elem.scrollTop = elem.scrollHeight;
+            window.map.setZoom(12);
+        }
+
+        $("#ClearBtn").on("click", function(){
+            hideMarkers();
+        });        
+
+        function FindMarker(SomeId){
+            for (var marker in window.map.getPanes().overlayImage.getElementsByTagName("div")) {
+                 if (marker.title == SomeId) return marker;
+            }
+        }
+
+        function ClickSiteName(siteName) {
+        var marker = FindMarkerInMarkers(siteName);
+
+        if(marker!=null){
+            marker.setVisible(true);
+            window.map.setCenter(marker.getPosition());
+            window.map.setZoom(15);
+        }
+        else{
+            marker = FindMarkerInVector(siteName)
+            if(marker!=null){
+                
+            }
+            else
+                alert("No Marker Such This Found");
+        }
+        }
+
+    $("#SiteSearchBox").keyup(function(event){
+        if(event.keyCode == 13){
+            ClickSiteName(document.getElementById("SiteSearchBox").value);
+        }
+    });
+
+        function FindMarkerInVector(MarkerSiteNameToFind){
+            for (var i = 0; i < Information.length; i++) {
+                if(Information[i][0]==MarkerSiteNameToFind){
+                    return Information[i][0];
+                }
+            }
+            return null;
+        }
+
+
+    </script>
     </body>
 </html>
