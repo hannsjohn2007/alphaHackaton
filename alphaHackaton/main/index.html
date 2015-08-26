@@ -489,7 +489,6 @@
 
             PlotMarkers(infowindow,window.map, window.sites[CurrentCoordinates].lat, window.sites[CurrentCoordinates].lng, sites[CurrentCoordinates].siteName);
             window.CurrentCoordinates=window.CurrentCoordinates+1;
-
             //Panel Body Always at End 
             var elem = document.getElementById('PanelBody');
             elem.scrollTop = elem.scrollHeight;
@@ -510,22 +509,12 @@
             var marker = FindMarkerInMarkers(siteName);
 
             if(marker!=null){
-                    alert("Marker  Found in Markers");
                 marker.setVisible(true);
                 window.map.setCenter(marker.getPosition());
                 window.map.setZoom(15);
             }
-            else{
-                alert("Marker  Found in Vector");
-                marker = FindMarkerInVector(siteName)
-                if(marker!=null){
-
-                    window.map.setCenter(marker.getPosition());
-                    window.map.setZoom(15);
-                }
-                else
-                    alert("No Marker Such This Found");
-            }
+            else if(!FindAndPlotMarkerInVector(siteName))
+                alert("No such Site-ID Found")
         }
 
         $("#SiteSearchBox").keyup(function(event){
@@ -534,14 +523,31 @@
             }
         });
 
-        function FindMarkerInVector(MarkerSiteNameToFind){
+        function FindAndPlotMarkerInVector(MarkerSiteNameToFind){
             for (var i = 0; i < sites.length; i++) {
 
-                if(siteInfo[i].siteName==MarkerSiteNameToFind){
-                    return siteInfo[i].siteName;
+                if(sites[i].siteName==MarkerSiteNameToFind){
+                    var contentString = '<div id="content">'+
+                      '<div id="siteNotice">'+
+                      '</div>'+
+                      '<h4 id="firstHeading" class="firstHeading">Site Name : <b>' + sites[i].siteName +'</b></h4>'+
+                      '<div id="bodyContent">'+
+                      '<h5>Site ID : ' + sites[i].siteId +
+                      '</h5>'+
+                      '<h5>Technology : ' + sites[i].technology +
+                      '</h5>'+
+                      '</div>'+
+                      '</div>';
+
+                    var infowindow  = new google.maps.InfoWindow({
+                      content: contentString
+                    });
+                    PlotMarkers(infowindow,window.map, window.sites[i].lat, window.sites[i].lng, sites[i].siteName);
+                    window.map.setZoom(15);
+                    return true;
                 }
             }
-            return null;
+            return false;
         }
     </script>
 
@@ -559,6 +565,7 @@
                 });
                 for(var i=0;i<5;i++)
                     LoadSites(sites);
+                window.markerCluster.addMarkers(window.markers,true);
            });
     </script>
     </body>
