@@ -41,47 +41,135 @@
           <script src="js/lte-ie7.js"></script>
         <![endif]-->
 
+        <style>
+        .controls {
+            margin-top: 10px;
+            border: 1px solid transparent;
+            border-radius: 2px 0 0 2px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            height: 32px;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #pac-input {
+            background-color: #fff;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            margin-left: 12px;
+            padding: 0 11px 0 13px;
+            text-overflow: ellipsis;
+            width: 300px;
+        }
+
+        #pac-input:focus {
+            border-color: #4d90fe;
+        }
+        </style>
+
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script src="http://maps.googleapis.com/maps/api/js"></script>
+
         <script>
-            var markers=[];
-            var sites;
-            function addMarkerToMarkers(marker){
-                window.markers.push(marker);
-            }
+        var markers=[];
+        var sites;
 
-            function FindMarkerInMarkers(MarkerSiteNameToFind){
-                for (var i = 0; i < markers.length; i++) {
-                    if(markers[i].title==MarkerSiteNameToFind)
-                        return markers[i];
-                }
-            }
+        function addMarkerToMarkers(marker) {
+            window.markers.push(marker);
+        };
 
-            function hideMarkers() {
-                while(window.markers.length){
-                    window.markers.pop().setMap(null);
-                }
+        function FindMarkerInMarkers(MarkerSiteNameToFind) {
+            for (var i = 0; i < markers.length; i++) {
+                if(markers[i].title==MarkerSiteNameToFind)
+                    return markers[i];
             }
+        };
 
-            $("#RemoveAllMarkers").on("click", function(){
-                hideMarkers();
-            });        
+        function hideMarkers() {
+            while(window.markers.length){
+                window.markers.pop().setMap(null);
+            }
+        };
+
+        $("#RemoveAllMarkers").on("click", function() {
+            hideMarkers();
+        });        
         </script>
 
         <script>
-            var map;
-            var markerCluster;
+        var map;
+        var markerCluster;
         
-            function initialize() {
-                var myLatlng = new google.maps.LatLng(14.7212398,121.0400891);
-                var mapProp = {
-                    center: myLatlng,
-                    zoom:12,
-                    mapTypeId:google.maps.MapTypeId.ROADMAP
+        function initialize() {
+            var myLatlng = new google.maps.LatLng(14.7212398,121.0400891);
+            var mapProp = {
+                center: myLatlng,
+                zoom:12,
+                mapTypeId:google.maps.MapTypeId.ROADMAP
                 };
                 window.map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+            //new
+            // Create the search box and link it to the UI element.
+            var input = document.getElementById('pac-input');
+            var searchBox = new google.maps.places.SearchBox(input);
+            window.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+            // Bias the SearchBox results towards current map's viewport.
+            map.addListener('bounds_changed', function() {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            var markers = [];
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place.
+            searchBox.addListener('places_changed', function() {
+                var places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                  return;
+                }
+
+                // Clear out the old markers.
+                markers.forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                // For each place, get the icon, name and location.
+                var bounds = new google.maps.LatLngBounds();
+                places.forEach(function(place) {
+                    var icon = {
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25)
+                    };
+
+                    // Create a marker for each place.
+                    markers.push(new google.maps.Marker({
+                        map: map,
+                        icon: icon,
+                        title: place.name,
+                        position: place.geometry.location
+                    }));
+
+                    if (place.geometry.viewport) {
+                        // Only geocodes have viewport.
+                        bounds.union(place.geometry.viewport);
+                    }
+                    else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                
+                map.fitBounds(bounds);
+            });
                
-                window.markerCluster= new MarkerClusterer(window.map, window.markers);
+            window.markerCluster= new MarkerClusterer(window.map, window.markers);
                 
                 
             }
@@ -102,13 +190,15 @@
                 window.markers.push(marker);
 
                 window.map.setCenter(marker.getPosition());
-            }
+        };
             
             google.maps.event.addDomListener(window, 'load', initialize);
             
         </script>
     </head>
+
     <body>
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
         <!-- container section start -->
         <section id="container" class="">
 
@@ -584,9 +674,11 @@
                     (window.markers[i]).setAnimation(null);
                     i++;
             }
-            
         }
 
     </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initAutocomplete"
+        async defer></script>
     </body>
 </html>
