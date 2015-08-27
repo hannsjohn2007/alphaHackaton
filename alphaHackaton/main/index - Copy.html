@@ -10,7 +10,7 @@
 
         <title>Alpha Hackathon</title>
 
-        <!-- bootstrap CSS -->    
+        <!-- Bootstrap CSS -->    
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <!-- bootstrap theme -->
         <link href="css/bootstrap-theme.css" rel="stylesheet">
@@ -26,7 +26,7 @@
         <!-- owl carousel -->
         <link rel="stylesheet" href="css/owl.carousel.css" type="text/css">
         <link href="css/jquery-jvectormap-1.2.2.css" rel="stylesheet">
-        <!-- custom styles -->
+        <!-- Custom styles -->
         <link rel="stylesheet" href="css/fullcalendar.css">
         <link href="css/widgets.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
@@ -34,177 +34,171 @@
         <link href="css/xcharts.min.css" rel=" stylesheet"> 
         <link href="css/jquery-ui-1.10.4.min.css" rel="stylesheet">
 
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
+        <!--[if lt IE 9]>
+          <script src="js/html5shiv.js"></script>
+          <script src="js/respond.min.js"></script>
+          <script src="js/lte-ie7.js"></script>
+        <![endif]-->
+
         <style>
-            .controls {
-                margin-top: 10px;
-                border: 1px solid transparent;
-                border-radius: 2px 0 0 2px;
-                box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                height: 32px;
-                outline: none;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            }
+        .controls {
+            margin-top: 10px;
+            border: 1px solid transparent;
+            border-radius: 2px 0 0 2px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            height: 32px;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
 
-            #pac-input {
-                background-color: #fff;
-                font-family: Roboto;
-                font-size: 15px;
-                font-weight: 300;
-                margin-left: 12px;
-                padding: 0 11px 0 13px;
-                text-overflow: ellipsis;
-                width: 300px;
-            }
+        #pac-input {
+            background-color: #fff;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            margin-left: 12px;
+            padding: 0 11px 0 13px;
+            text-overflow: ellipsis;
+            width: 300px;
+        }
 
-            #pac-input:focus {
-                border-color: #4d90fe;
-            }
+        #pac-input:focus {
+            border-color: #4d90fe;
+        }
         </style>
 
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script src="http://maps.googleapis.com/maps/api/js"></script>
 
         <script>
-            var markers=[];
-            var sites;
-            var BeforeCurrentCoordinates;
-            function addMarkerToMarkers(marker) {
-                markers.push(marker);
-            };
+        var markers=[];
+        var sites;
 
-            function findMarkerInMarkers(markerSiteName) {
-                for (var i = 0; i < markers.length; i++) {
-                    if(markers[i].title === markerSiteName) {
-                        return markers[i];
-                    }
-                }
-            };
+        function addMarkerToMarkers(marker) {
+            window.markers.push(marker);
+        };
 
-            function hideMarkers() {
-                while(markers.length){
-                    markers.pop().setMap(null);
-                }
-                markerCluster.clearMarkers();
-            };
+        function FindMarkerInMarkers(MarkerSiteNameToFind) {
+            for (var i = 0; i < markers.length; i++) {
+                if(markers[i].title==MarkerSiteNameToFind)
+                    return markers[i];
+            }
+        };
 
+        function hideMarkers() {
+            while(window.markers.length){
+                window.markers.pop().setMap(null);
+            }
+            markerCluster.clearMarkers();
+        };
+
+        $("#RemoveAllMarkers").on("click", function() {
+            hideMarkers();
+        });        
         </script>
 
         <script>
-            var map;
-            var markerCluster;
-            
-            function initAutocomplete(){
-                var myLatlng = new google.maps.LatLng(14.7212398, 121.0400891);
-                var mapProp = {
-                    center: myLatlng,
-                    zoom: 12,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                    };
-                
-                map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+        var map;
+        var markerCluster;
+        var BeforeCurrentCoordinates;
+        function initialize() {
+            var myLatlng = new google.maps.LatLng(14.7212398,121.0400891);
+            var mapProp = {
+                center: myLatlng,
+                zoom:12,
+                mapTypeId:google.maps.MapTypeId.ROADMAP
+                };
+                window.map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
 
+            //new
+            // Create the search box and link it to the UI element.
+            var input = document.getElementById('pac-input');
+            var searchBox = new google.maps.places.SearchBox(input);
+            window.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+            // Bias the SearchBox results towards current map's viewport.
+            map.addListener('bounds_changed', function() {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            var markers = [];
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place.
+            searchBox.addListener('places_changed', function() {
+                var places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                  return;
+                }
+
+                // Clear out the old markers.
+                markers.forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                // For each place, get the icon, name and location.
+                var bounds = new google.maps.LatLngBounds();
+                places.forEach(function(place) {
+                    var icon = {
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25)
+                    };
+
+                    // Create a marker for each place.
+                    markers.push(new google.maps.Marker({
+                        map: map,
+                        icon: icon,
+                        title: place.name,
+                        position: place.geometry.location
+                    }));
+
+                    if (place.geometry.viewport) {
+                        // Only geocodes have viewport.
+                        bounds.union(place.geometry.viewport);
+                    }
+                    else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                
+                map.fitBounds(bounds);
+            });
+               
+            window.markerCluster= new MarkerClusterer(window.map, window.markers);
+                
                 
             }
 
-            function initialize() {
-                initAutocomplete();
-                addSearchBar();   
-                markerCluster= new MarkerClusterer(map, markers);
-            };
-
-            function addSearchBar() {
-                var input = document.getElementById('pac-input');
-                var searchBox = new google.maps.places.SearchBox(input);
-                map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-                map.addListener('bounds_changed', function() {
-                    searchBox.setBounds(map.getBounds());
-                });
-
-                var markers = [];
-
-                searchBox.addListener('places_changed', function() {
-                    var places = searchBox.getPlaces();
-
-                    if (places.length == 0) {
-                      return;
-                    }
-
-                    // Clear out the old markers.
-                    markers.forEach(function(marker) {
-                        marker.setMap(null);
-                    });
-                    markers = [];
-
-                    // For each place, get the icon, name and location.
-                    var bounds = new google.maps.LatLngBounds();
-                    places.forEach(function(place) {
-                        var icon = {
-                            url: place.icon,
-                            size: new google.maps.Size(71, 71),
-                            origin: new google.maps.Point(0, 0),
-                            anchor: new google.maps.Point(17, 34),
-                            scaledSize: new google.maps.Size(25, 25)
-                        };
-
-                        // Create a marker for each place.
-                        markers.push(new google.maps.Marker({
-                            map: map,
-                            icon: icon,
-                            title: place.name,
-                            position: place.geometry.location
-                        }));
-
-                        if (place.geometry.viewport) {
-                            bounds.union(place.geometry.viewport);
-                        }
-                        else {
-                            bounds.extend(place.geometry.location);
-                        }
-                    });
-                    
-                    map.fitBounds(bounds);
-                });
-            };
-
-            function plotMarkers(win, map, lat, lng, theTitle) {
+            function PlotMarkers(win,map, lat, lng, theTitle) {
                 var myLatlng = new google.maps.LatLng(lat, lng);
                 var marker = new google.maps.Marker({
                     position: myLatlng,
-                    title: theTitle
+                    title:theTitle
                 });
-                
-                marker.setMap(map);
-
+                marker.setMap(map)
 
                 marker.addListener('click', function() {
                     win.open(map, marker);
                 });
-                setInterval(function () {win.close()}, 10000);
+
                 addMarkerToMarkers(marker);
-                markers.push(marker);
+                window.markers.push(marker);
 
-                map.setCenter(marker.getPosition());
-
-            };
+                window.map.setCenter(marker.getPosition());
+        };
             
             google.maps.event.addDomListener(window, 'load', initialize);
-            $(window).load(function(){
-               // PAGE IS FULLY LOADED  
-               // FADE OUT YOUR OVERLAYING DIV
-               $('#overlay').fadeOut();
-            });
+            
         </script>
-
     </head>
 
     <body>
-        <div id="overlay">
-             <center><img src="loading.gif" alt="Loading" />
-             <br><h2>Loading...</h2>
-             </center>
-        </div>
         <input id="pac-input" class="controls" type="text" placeholder="Search Box">
         <!-- container section start -->
         <section id="container" class="">
@@ -218,6 +212,18 @@
             <a href="index.html" class="logo">ALPHA <span class="lite">HACKATHON</span></a>
             <!--logo end-->
 
+            <div class="nav search-row" id="top_menu">
+                <!--  search form start -->
+                <ul class="nav top-menu">                    
+                    <li>
+                        <form class="navbar-form">
+                            <input class="form-control" placeholder="Search" type="text">
+                        </form>
+                    </li>                    
+                </ul>
+                <!--  search form end -->                
+            </div>
+
             <div class="top-nav notification-row">                
                 <!-- notificatoin dropdown start-->
                 <ul class="nav pull-right top-menu">
@@ -227,10 +233,37 @@
                             <span class="profile-ava">
                                 <img alt="" src="img/avatar1_small.jpg">
                             </span>
-                            <span class="username">Administrator</span> 
+                            <span class="username">Administrator</span>
+                            <b class="caret"></b>
                         </a>
+                        <ul class="dropdown-menu extended logout">
+                            <div class="log-arrow-up"></div>
+                            <li class="eborder-top">
+                                <a href="#"><i class="icon_profile"></i> My Profile</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon_mail_alt"></i> My Inbox</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon_clock_alt"></i> Timeline</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon_chat_alt"></i> Chats</a>
+                            </li>
+                            <li>
+                                <a href="login.html"><i class="icon_key_alt"></i> Log Out</a>
+                            </li>
+                            <li>
+                                <a href="documentation.html"><i class="icon_key_alt"></i> Documentation</a>
+                            </li>
+                            <li>
+                                <a href="documentation.html"><i class="icon_key_alt"></i> Documentation</a>
+                            </li>
+                        </ul>
                     </li>
+                    <!-- user login dropdown end -->
                 </ul>
+                <!-- notificatoin dropdown end-->
             </div>
         </header>      
         <!--header end-->
@@ -272,13 +305,13 @@
                                 <h2><i class="fa fa-map-marker red"></i><strong>World Map</strong></h2>
                             </div>
                             <div class="panel-body-map">
-                                <div id="googleMap" style="width:100%; height:380px;"></div>  
+                                <div id="googleMap" style="width:100%; height:100%;"></div> 
                             </div>
                         </div>
                     </div>
                 </div>  
                 <div class="row">       
-                    <div class="col-lg-11 col-md-12">   
+                    <div class="col-lg-11 col-md-9">    
                         <div class="panel panel-default">
                             <div class="panel-actions">
                                 <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
@@ -308,6 +341,7 @@
                                 <button type="submit" class="btn btn-primary btn-lg btn-block" id="moreBtn">Navigate More Sites</button>
                                 <button type="button" class="btn btn-danger" href="" title="Bootstrap 3 themes generator" id="ClearBtn"><span class="icon_target"></span> Clear All Markers</button>
                                 <button class="btn btn-success" href="" title="Bootstrap 3 themes generator" id="PlotBtn"><span class="icon_mic_alt"></span> Plot All Markers</button>
+                                <!--<button class="btn btn-warning" href="" title="Bootstrap 3 themes generator"><span class="icon_pin_alt"></span> Warning</button>-->
                             </div>
                         </div>  
                     </div><!--/col-->           
@@ -443,7 +477,6 @@
     <script src="js/sparklines.js"></script>    
     <script src="js/charts.js"></script>
     <script src="js/jquery.slimscroll.min.js"></script>
-
     <script>
         //knob
         $(function() {
@@ -486,22 +519,15 @@
                 }
             });
         });
+        /* populating dynamic array
+        var sites = [];
+        var siteInfo = {a:'asd', b:1, c:2};
+        sites.push(siteInfo); 
+        */
         
         sites = [];
         
         var CurrentCoordinates = 0;
-        var AwesomeRadioButton = "<center>"+
-                                 "<div class=\"btn-row>\""+
-                                 "<div class=\"btn-group\" data-toggle=\"buttons\">"+
-                                 "<label class=\"btn btn-danger active\">" +
-                                    "<input type=\"radio\" name=\"options\" id=\"option1\"> Disabled" +
-                                 "</label>" +
-                                 "<label class=\"btn btn-success\">" +
-                                    "<input type=\"radio\" name=\"options\" id=\"option2\"> Enabled" +
-                                 "</label>" +                                
-                                 "</label>" +                      
-                                 "</div>"+
-                                 "</center>";
 
 
         var AddTextHref = "<a class=\"title\" id=\"sites[CurrentCoordinates].siteName\" style=\"cursor: pointer; cursor: hand;\">";
@@ -511,7 +537,7 @@
             for(var i=0;i<100;i++)            
                 LoadSites();
             
-            markerCluster.addMarkers(markers,true);
+            window.markerCluster.addMarkers(window.markers,true);
         });
 
         function LoadSites(){
@@ -528,21 +554,21 @@
                          "</div>"+
                          "</center>";
 
-            var $row = $("<tr> <td>"+ AddTextHref + sites[CurrentCoordinates].siteName + "</a></td> <td>" + sites[CurrentCoordinates].siteId + "</td> <td>" + sites[CurrentCoordinates].technology + "</td><td>"+AwesomeRadioButton+"</td>"+"</tr>");
+            var $row = $("<tr> <td>"+ window.AddTextHref + sites[CurrentCoordinates].siteName + "</a></td> <td>" + sites[CurrentCoordinates].siteId + "</td> <td>" + sites[CurrentCoordinates].technology + "</td><td>"+AwesomeRadioButton+"</td>"+"</tr>");
 
             $row.find('a.title').click(function(e){
                 e.preventDefault();
-                clearAllMarkersAnimation();
-                clickSiteName( $(this).text() );
+                ClearAllMarkersAnimation();
+                ClickSiteName( $(this).text() );
             });
 
             $row.find('label.btn').click(function(e){
-                clearAllMarkersAnimation();
+                ClearAllMarkersAnimation();
                 var action = $(this).hasClass('point-enable') ? 'enable' : 'disable';
                 var ourId = $('input.radio',$(this)).data('id');
-                var marker = findMarkerInMarkers(ourId);
-                map.setCenter(marker.getPosition());
-                map.setZoom(15);
+                var marker = FindMarkerInMarkers(ourId);
+                window.map.setCenter(marker.getPosition());
+                window.map.setZoom(15);
                 if(action=='disable'){
                     marker.setVisible(false);
                     marker.setAnimation(null);                    
@@ -569,86 +595,61 @@
               '</div>'+
               '</div>';
 
-            
             var infowindow  = new google.maps.InfoWindow({
               content: contentString
-                });
-            
-            plotMarkers(infowindow,map, sites[CurrentCoordinates].lat, sites[CurrentCoordinates].lng, sites[CurrentCoordinates].siteName);
-            CurrentCoordinates=CurrentCoordinates+1;
+            });
+
+            PlotMarkers(infowindow,window.map, window.sites[CurrentCoordinates].lat, window.sites[CurrentCoordinates].lng, sites[CurrentCoordinates].siteName);
+            window.CurrentCoordinates=window.CurrentCoordinates+1;
             //Panel Body Always at End 
             var elem = document.getElementById('PanelBody');
             elem.scrollTop = elem.scrollHeight;
-            map.setZoom(12);
+            window.map.setZoom(12);
         }
 
         $("#ClearBtn").on("click", function(){
             BeforeCurrentCoordinates=CurrentCoordinates;
             CurrentCoordinates=0
             hideMarkers();
-            clearCircles();
-            $(document).ready(function() {
-               $("#SiteTable").find("tr:gt(0)").remove();
-            });
         });        
 
         $("#PlotBtn").on("click", function(){
             for(var i=0;i<BeforeCurrentCoordinates;i++)
                 LoadSites();
-            markerCluster.addMarkers(markers,true);
+            window.markerCluster.addMarkers(window.markers,true);
             
-        });
-        var circles=[];
-        var circle;
-        function clickSiteName(siteName) {
-            var marker = findMarkerInMarkers(siteName);
+        });        
 
-            if (marker != null) {
-                marker.setVisible(true);
-                marker.setAnimation(google.maps.Animation.BOUNCE);
-                map.setCenter(marker.getPosition());
-                map.setZoom(15);
-
-                clearCircles();
-
-                circle = new google.maps.Circle({
-                  map: map,
-                  radius: Number(getRadius(siteName)),    // 10 miles in metres
-                  fillColor: '#AA0000'
-                });
-                circle.bindTo('center', marker, 'position');
-                circles.push(circle);
-            }
-            else if (!findAndPlotMarkerInVector(siteName)) {
-                alert("No such Site-Name Found")
-            }
-        };
-        function clearCircles(){
-            for (var i = 0; i < circles.length; i++) {
-                circles[i].setVisible(false);
+        function FindMarker(SomeId){
+            for (var marker in window.map.getPanes().overlayImage.getElementsByTagName("div")) {
+                 if (marker.title == SomeId) return marker;
             }
         }
 
-        
+        function ClickSiteName(siteName) {
+            var marker = FindMarkerInMarkers(siteName);
 
-        function getRadius(siteName){
-            for (var i = 0; i < markers.length; i++) {
-                    if(markers[i].title === siteName) {
-                        return sites[i].radius;
-                    }
+            if(marker!=null){
+                marker.setVisible(true);
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+                window.map.setCenter(marker.getPosition());
+                window.map.setZoom(15);
             }
+            else if(!FindAndPlotMarkerInVector(siteName))
+                alert("No such Site-ID Found")
         }
 
         $("#SiteSearchBox").keyup(function(event){
             if(event.keyCode == 13){
-                clearAllMarkersAnimation();
-                clickSiteName(document.getElementById("SiteSearchBox").value);
+                ClearAllMarkersAnimation();
+                ClickSiteName(document.getElementById("SiteSearchBox").value);
             }
         });
 
-        function findAndPlotMarkerInVector(markerSiteName){
+        function FindAndPlotMarkerInVector(MarkerSiteNameToFind){
             for (var i = 0; i < sites.length; i++) {
-                if(sites[i].siteName==markerSiteName){
+
+                if(sites[i].siteName==MarkerSiteNameToFind){
                     var contentString = '<div id="content">'+
                       '<div id="siteNotice">'+
                       '</div>'+
@@ -661,60 +662,53 @@
                       '</div>'+
                       '</div>';
 
-
-                    
                     var infowindow  = new google.maps.InfoWindow({
                       content: contentString
-                        });
-                    
-                    plotMarkers(infowindow,map, sites[i].lat, sites[i].lng, sites[i].siteName);
-                    map.setZoom(15);
+                    });
+                    PlotMarkers(infowindow,window.map, window.sites[i].lat, window.sites[i].lng, sites[i].siteName);
+                    window.map.setZoom(15);
                     return true;
                 }
             }
             return false;
-        };
+        }
 
-        var dataUrl = "http://localhost:4000/points";
+        var flickerAPI = "http://localhost:4000/points";
+       $.get( flickerAPI, {})
 
-        $.get(dataUrl, {})
+           .done(function( data ) {
+                $.each( data, function( i, item ) {
+                    var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude};
+                    sites.push(siteInfo);
 
-        .done(function(data) {
-            $.each(data, function( i, item ) {
-                var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude, radius:item.position.coordinates_source.radius};
-                sites.push(siteInfo);
-            });
+                });
+                for(var i=0;i<100;i++)
+                    LoadSites();
+                window.markerCluster.addMarkers(window.markers,true);
+           });
 
-            for(var i = 0; i < 100; i++) {
-                LoadSites();
-            }
-        
-            markerCluster.addMarkers(markers,true);
-        });
-
-        var isPanelMinimize = 0;
-
-        $(".btn-minimize").click(function() {
-            if (isPanelMinimize == 1) {
+           var isPanelMinimize=0;
+        $(".btn-minimize").click(function(){
+            if(isPanelMinimize==1){
                 $(".panel-body").collapse('hide');
                 isPanelMinimize=0;
             }
-            else {
+            else{
                 $(".panel-body").collapse('show');
-                isPanelMinimize = 1;
+                isPanelMinimize=1;
             }
         });
 
-        function clearAllMarkersAnimation() {
-            var i = 0;
-            
-            while(i < markers.length) {
-                    (markers[i]).setAnimation(null);
-                    i++;
+        function ClearAllMarkersAnimation(){
+            var i=0;
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setAnimation(null);
             }
-        };
+        }
+
     </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initAutocomplete" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initAutocomplete"
+        async defer></script>
     </body>
 </html>
