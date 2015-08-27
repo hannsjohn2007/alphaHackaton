@@ -88,10 +88,13 @@
         };
 
         function hideMarkers() {
-            while(window.markers.length){
-                window.markers.pop().setMap(null);
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setVisible(false);
             }
-        };
+            console.log(markers);
+            markerCluster.clearMarkers();
+            console.log(markers);
+        }
 
         $("#RemoveAllMarkers").on("click", function() {
             hideMarkers();
