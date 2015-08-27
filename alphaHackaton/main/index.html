@@ -10,7 +10,7 @@
 
         <title>Alpha Hackathon</title>
 
-        <!-- Bootstrap CSS -->    
+        <!-- bootstrap CSS -->    
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <!-- bootstrap theme -->
         <link href="css/bootstrap-theme.css" rel="stylesheet">
@@ -20,183 +20,170 @@
         <link href="css/font-awesome.min.css" rel="stylesheet" />    
         <!-- full calendar css-->
         <link href="assets/fullcalendar/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet" />
-    	<link href="assets/fullcalendar/fullcalendar/fullcalendar.css" rel="stylesheet" />
+        <link href="assets/fullcalendar/fullcalendar/fullcalendar.css" rel="stylesheet" />
         <!-- easy pie chart-->
         <link href="assets/jquery-easy-pie-chart/jquery.easy-pie-chart.css" rel="stylesheet" type="text/css" media="screen"/>
         <!-- owl carousel -->
         <link rel="stylesheet" href="css/owl.carousel.css" type="text/css">
-    	<link href="css/jquery-jvectormap-1.2.2.css" rel="stylesheet">
-        <!-- Custom styles -->
-    	<link rel="stylesheet" href="css/fullcalendar.css">
-    	<link href="css/widgets.css" rel="stylesheet">
+        <link href="css/jquery-jvectormap-1.2.2.css" rel="stylesheet">
+        <!-- custom styles -->
+        <link rel="stylesheet" href="css/fullcalendar.css">
+        <link href="css/widgets.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
         <link href="css/style-responsive.css" rel="stylesheet" />
-    	<link href="css/xcharts.min.css" rel=" stylesheet">	
-    	<link href="css/jquery-ui-1.10.4.min.css" rel="stylesheet">
-
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
-        <!--[if lt IE 9]>
-          <script src="js/html5shiv.js"></script>
-          <script src="js/respond.min.js"></script>
-          <script src="js/lte-ie7.js"></script>
-        <![endif]-->
+        <link href="css/xcharts.min.css" rel=" stylesheet"> 
+        <link href="css/jquery-ui-1.10.4.min.css" rel="stylesheet">
 
         <style>
-        .controls {
-            margin-top: 10px;
-            border: 1px solid transparent;
-            border-radius: 2px 0 0 2px;
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            height: 32px;
-            outline: none;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
+            .controls {
+                margin-top: 10px;
+                border: 1px solid transparent;
+                border-radius: 2px 0 0 2px;
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                height: 32px;
+                outline: none;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            }
 
-        #pac-input {
-            background-color: #fff;
-            font-family: Roboto;
-            font-size: 15px;
-            font-weight: 300;
-            margin-left: 12px;
-            padding: 0 11px 0 13px;
-            text-overflow: ellipsis;
-            width: 300px;
-        }
+            #pac-input {
+                background-color: #fff;
+                font-family: Roboto;
+                font-size: 15px;
+                font-weight: 300;
+                margin-left: 12px;
+                padding: 0 11px 0 13px;
+                text-overflow: ellipsis;
+                width: 300px;
+            }
 
-        #pac-input:focus {
-            border-color: #4d90fe;
-        }
+            #pac-input:focus {
+                border-color: #4d90fe;
+            }
         </style>
 
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script src="http://maps.googleapis.com/maps/api/js"></script>
 
         <script>
-        var markers=[];
-        var sites;
+            var markers=[];
+            var sites;
+            var BeforeCurrentCoordinates;
+            function addMarkerToMarkers(marker) {
+                markers.push(marker);
+            };
 
-        function addMarkerToMarkers(marker) {
-            window.markers.push(marker);
-        };
+            function findMarkerInMarkers(markerSiteName) {
+                for (var i = 0; i < markers.length; i++) {
+                    if(markers[i].title === markerSiteName) {
+                        return markers[i];
+                    }
+                }
+            };
 
-        function FindMarkerInMarkers(MarkerSiteNameToFind) {
-            for (var i = 0; i < markers.length; i++) {
-                if(markers[i].title==MarkerSiteNameToFind)
-                    return markers[i];
-            }
-        };
+            function hideMarkers() {
+                while(markers.length){
+                    markers.pop().setMap(null);
+                }
+                markerCluster.clearMarkers();
+            };
 
-        function hideMarkers() {
-            for (var i = 0; i < markers.length; i++) {
-                markers[i].setVisible(false);
-            }
-            console.log(markers);
-            markerCluster.clearMarkers();
-            console.log(markers);
-        }
-
-        $("#RemoveAllMarkers").on("click", function() {
-            hideMarkers();
-        });        
         </script>
 
         <script>
-        var map;
-        var markerCluster;
-        
-        function initialize() {
-            var myLatlng = new google.maps.LatLng(14.7212398,121.0400891);
-            var mapProp = {
-                center: myLatlng,
-                zoom:12,
-                mapTypeId:google.maps.MapTypeId.ROADMAP
-                };
-                window.map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
-
-            //new
-            // Create the search box and link it to the UI element.
-            var input = document.getElementById('pac-input');
-            var searchBox = new google.maps.places.SearchBox(input);
-            window.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-            // Bias the SearchBox results towards current map's viewport.
-            map.addListener('bounds_changed', function() {
-                searchBox.setBounds(map.getBounds());
-            });
-
-            var markers = [];
-            // Listen for the event fired when the user selects a prediction and retrieve
-            // more details for that place.
-            searchBox.addListener('places_changed', function() {
-                var places = searchBox.getPlaces();
-
-                if (places.length == 0) {
-                  return;
-                }
-
-                // Clear out the old markers.
-                markers.forEach(function(marker) {
-                    marker.setMap(null);
-                });
-                markers = [];
-
-                // For each place, get the icon, name and location.
-                var bounds = new google.maps.LatLngBounds();
-                places.forEach(function(place) {
-                    var icon = {
-                        url: place.icon,
-                        size: new google.maps.Size(71, 71),
-                        origin: new google.maps.Point(0, 0),
-                        anchor: new google.maps.Point(17, 34),
-                        scaledSize: new google.maps.Size(25, 25)
+            var map;
+            var markerCluster;
+            
+            function initialize() {
+                var myLatlng = new google.maps.LatLng(14.7212398, 121.0400891);
+                var mapProp = {
+                    center: myLatlng,
+                    zoom: 12,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
                     };
+                
+                map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
 
-                    // Create a marker for each place.
-                    markers.push(new google.maps.Marker({
-                        map: map,
-                        icon: icon,
-                        title: place.name,
-                        position: place.geometry.location
-                    }));
+                addSearchBar();   
+                markerCluster= new MarkerClusterer(map, markers);
+            };
 
-                    if (place.geometry.viewport) {
-                        // Only geocodes have viewport.
-                        bounds.union(place.geometry.viewport);
-                    }
-                    else {
-                        bounds.extend(place.geometry.location);
-                    }
+            function addSearchBar() {
+                var input = document.getElementById('pac-input');
+                var searchBox = new google.maps.places.SearchBox(input);
+                map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+                map.addListener('bounds_changed', function() {
+                    searchBox.setBounds(map.getBounds());
                 });
-                
-                map.fitBounds(bounds);
-            });
-               
-            window.markerCluster= new MarkerClusterer(window.map, window.markers);
-                
-                
-            }
 
-            function PlotMarkers(win,map, lat, lng, theTitle) {
+                var markers = [];
+
+                searchBox.addListener('places_changed', function() {
+                    var places = searchBox.getPlaces();
+
+                    if (places.length == 0) {
+                      return;
+                    }
+
+                    // Clear out the old markers.
+                    markers.forEach(function(marker) {
+                        marker.setMap(null);
+                    });
+                    markers = [];
+
+                    // For each place, get the icon, name and location.
+                    var bounds = new google.maps.LatLngBounds();
+                    places.forEach(function(place) {
+                        var icon = {
+                            url: place.icon,
+                            size: new google.maps.Size(71, 71),
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(17, 34),
+                            scaledSize: new google.maps.Size(25, 25)
+                        };
+
+                        // Create a marker for each place.
+                        markers.push(new google.maps.Marker({
+                            map: map,
+                            icon: icon,
+                            title: place.name,
+                            position: place.geometry.location
+                        }));
+
+                        if (place.geometry.viewport) {
+                            bounds.union(place.geometry.viewport);
+                        }
+                        else {
+                            bounds.extend(place.geometry.location);
+                        }
+                    });
+                    
+                    map.fitBounds(bounds);
+                });
+            };
+
+            function plotMarkers(win, map, lat, lng, theTitle) {
                 var myLatlng = new google.maps.LatLng(lat, lng);
                 var marker = new google.maps.Marker({
                     position: myLatlng,
-                    title:theTitle
+                    title: theTitle
                 });
-                marker.setMap(map)
+                
+                marker.setMap(map);
 
                 marker.addListener('click', function() {
                     win.open(map, marker);
                 });
 
                 addMarkerToMarkers(marker);
-                window.markers.push(marker);
+                markers.push(marker);
 
-                window.map.setCenter(marker.getPosition());
-        };
+                map.setCenter(marker.getPosition());
+
+            };
             
             google.maps.event.addDomListener(window, 'load', initialize);
-            
         </script>
     </head>
 
@@ -214,18 +201,6 @@
             <a href="index.html" class="logo">ALPHA <span class="lite">HACKATHON</span></a>
             <!--logo end-->
 
-            <div class="nav search-row" id="top_menu">
-                <!--  search form start -->
-                <ul class="nav top-menu">                    
-                    <li>
-                        <form class="navbar-form">
-                            <input class="form-control" placeholder="Search" type="text">
-                        </form>
-                    </li>                    
-                </ul>
-                <!--  search form end -->                
-            </div>
-
             <div class="top-nav notification-row">                
                 <!-- notificatoin dropdown start-->
                 <ul class="nav pull-right top-menu">
@@ -235,37 +210,10 @@
                             <span class="profile-ava">
                                 <img alt="" src="img/avatar1_small.jpg">
                             </span>
-                            <span class="username">Administrator</span>
-                            <b class="caret"></b>
+                            <span class="username">Administrator</span> 
                         </a>
-                        <ul class="dropdown-menu extended logout">
-                            <div class="log-arrow-up"></div>
-                            <li class="eborder-top">
-                                <a href="#"><i class="icon_profile"></i> My Profile</a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="icon_mail_alt"></i> My Inbox</a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="icon_clock_alt"></i> Timeline</a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="icon_chat_alt"></i> Chats</a>
-                            </li>
-                            <li>
-                                <a href="login.html"><i class="icon_key_alt"></i> Log Out</a>
-                            </li>
-                            <li>
-                                <a href="documentation.html"><i class="icon_key_alt"></i> Documentation</a>
-                            </li>
-                            <li>
-                                <a href="documentation.html"><i class="icon_key_alt"></i> Documentation</a>
-                            </li>
-                        </ul>
                     </li>
-                    <!-- user login dropdown end -->
                 </ul>
-                <!-- notificatoin dropdown end-->
             </div>
         </header>      
         <!--header end-->
@@ -291,60 +239,61 @@
         <section id="main-content">
             <section class="wrapper">            
                 <!--overview start-->
-			    <div class="row">
-				    <div class="col-lg-11">
-					    <h3 class="page-header"><i class="fa fa-laptop"></i> Alpha Hackathon Blue Print</h3>
-					    <ol class="breadcrumb">
-						    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
-						    <li><i class="fa fa-laptop"></i>Site Map</li>						  	
-					    </ol>
-				    </div>
+                <div class="row">
+                    <div class="col-lg-11">
+                        <h3 class="page-header"><i class="fa fa-laptop"></i> Alpha Hackathon Blue Print</h3>
+                        <ol class="breadcrumb">
+                            <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+                            <li><i class="fa fa-laptop"></i>Site Map</li>                           
+                        </ol>
+                    </div>
                 </div>
                 <div class="row">
-    		        <div class="col-lg-11 col-md-12">
-    					<div class="panel panel-default">
-    						<div class="panel-heading">
-    							<h2><i class="fa fa-map-marker red"></i><strong>World Map</strong></h2>
-    						</div>
-    						<div class="panel-body-map">
-    							<div id="googleMap" style="width:1270px; height:380px;"></div>	
-    						</div>
-    					</div>
-    				</div>
+                    <div class="col-lg-11 col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2><i class="fa fa-map-marker red"></i><strong>World Map</strong></h2>
+                            </div>
+                            <div class="panel-body-map">
+                                <div id="googleMap" style="width:1270px; height:380px;"></div>  
+                            </div>
+                        </div>
+                    </div>
                 </div>  
-			    <div class="row">   	
-    				<div class="col-lg-11 col-md-9">	
-    					<div class="panel panel-default">
+                <div class="row">       
+                    <div class="col-lg-11 col-md-12">   
+                        <div class="panel panel-default">
                             <div class="panel-actions">
                                 <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
                                 <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
                             </div>
-    						<div class="panel-heading">
-    							<h2><i class="fa fa-flag-o red"></i><strong>Site Navigation and Controls</strong></h2>
+                            <div class="panel-heading">
+                                <h2><i class="fa fa-flag-o red"></i><strong>Site Navigation and Controls</strong></h2>
                                 <div class="nav search-row" style="float:right;">
                                     <li>
                                           <input class="form-control input-sm m-bot15" type="text" placeholder="search Site-Name" id="SiteSearchBox">
                                     </li>                    
                                 </div>
-    						</div>
-    						<div class="panel-body" id="PanelBody" style="max-height: 500px; overflow-y: scroll;">
-    							<table class="table bootstrap-datatable countries" id="SiteTable">
-    								<thead>
-    									<tr>
-    										<th>Site-Name</th>
-    										<th>Site-ID</th>
-    										<th>Technology</th>
+                            </div>
+                            <div class="panel-body" id="PanelBody" style="max-height: 500px; overflow-y: scroll;">
+                                <table class="table bootstrap-datatable countries" id="SiteTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Site-Name</th>
+                                            <th>Site-ID</th>
+                                            <th>Technology</th>
                                             <th><center>Marker Status</center></th>
-    									</tr>
-    								</thead>   
-    								<tbody>
-    								</tbody>
-    							</table>
+                                        </tr>
+                                    </thead>   
+                                    <tbody>
+                                    </tbody>
+                                </table>
                                 <button type="submit" class="btn btn-primary btn-lg btn-block" id="moreBtn">Navigate More Sites</button>
-                                <button type="button" class="btn btn-danger btn-xs btn-block" id="ClearBtn">Clear Markers</button>
-    						</div>
-    					</div>	
-    				</div><!--/col-->			
+                                <button type="button" class="btn btn-danger" href="" title="Bootstrap 3 themes generator" id="ClearBtn"><span class="icon_target"></span> Clear All Markers</button>
+                                <button class="btn btn-success" href="" title="Bootstrap 3 themes generator" id="PlotBtn"><span class="icon_mic_alt"></span> Plot All Markers</button>
+                            </div>
+                        </div>  
+                    </div><!--/col-->           
                 </div>
                 <!-- project team & activity start -->
                 <div class="row">
@@ -438,7 +387,7 @@
     <!-- javascripts -->
     <script src="js/jquery.js"></script>
     <script src="js/markerclusterer.js"></script>
-	<script src="js/jquery-ui-1.10.4.min.js"></script>
+    <script src="js/jquery-ui-1.10.4.min.js"></script>
     <script src="js/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
     <!-- bootstrap -->
@@ -453,30 +402,31 @@
     <script src="js/owl.carousel.js" ></script>
     <!-- jQuery full calendar -->
     <script src="js/fullcalendar.min.js"></script> <!-- Full Google Calendar - Calendar -->
-	<script src="assets/fullcalendar/fullcalendar/fullcalendar.js"></script>
+    <script src="assets/fullcalendar/fullcalendar/fullcalendar.js"></script>
     <!--script for this page only-->
 
     <script src="js/calendar-custom.js"></script>
-	<script src="js/jquery.rateit.min.js"></script>
+    <script src="js/jquery.rateit.min.js"></script>
     <!-- custom select -->
     <script src="js/jquery.customSelect.min.js" ></script>
-	<script src="assets/chart-master/Chart.js"></script>
+    <script src="assets/chart-master/Chart.js"></script>
    
     <!--custome script for all page-->
     <script src="js/scripts.js"></script>
     <!-- custom script for this page-->
     <script src="js/sparkline-chart.js"></script>
     <script src="js/easy-pie-chart.js"></script>
-	<script src="js/jquery-jvectormap-1.2.2.min.js"></script>
-	<script src="js/jquery-jvectormap-world-mill-en.js"></script>
-	<script src="js/xcharts.min.js"></script>
-	<script src="js/jquery.autosize.min.js"></script>
-	<script src="js/jquery.placeholder.min.js"></script>
-	<script src="js/gdp-data.js"></script>	
-	<script src="js/morris.min.js"></script>
-	<script src="js/sparklines.js"></script>	
-	<script src="js/charts.js"></script>
-	<script src="js/jquery.slimscroll.min.js"></script>
+    <script src="js/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="js/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="js/xcharts.min.js"></script>
+    <script src="js/jquery.autosize.min.js"></script>
+    <script src="js/jquery.placeholder.min.js"></script>
+    <script src="js/gdp-data.js"></script>  
+    <script src="js/morris.min.js"></script>
+    <script src="js/sparklines.js"></script>    
+    <script src="js/charts.js"></script>
+    <script src="js/jquery.slimscroll.min.js"></script>
+
     <script>
         //knob
         $(function() {
@@ -501,29 +451,24 @@
         $(function(){
             $('select.styled').customSelect();
         });
-	  
-	   /* ---------- Map ---------- */
-	    $(function(){
-	        $('#map').vectorMap({
-	            map: 'world_mill_en',
-	            series: {
-    	            regions: [{
-    	               values: gdpData,
-    	               scale: ['#000', '#000'],
-    	               normalizeFunction: 'polynomial'
-    	            }]
-	            },
-		        backgroundColor: '#eef3f7',
-	            onLabelShow: function(e, el, code){
-	               el.html(el.html()+' (GDP - '+gdpData[code]+')');
-	            }
-	        });
-	    });
-        /* populating dynamic array
-        var sites = [];
-        var siteInfo = {a:'asd', b:1, c:2};
-        sites.push(siteInfo); 
-        */
+      
+       /* ---------- Map ---------- */
+        $(function(){
+            $('#map').vectorMap({
+                map: 'world_mill_en',
+                series: {
+                    regions: [{
+                       values: gdpData,
+                       scale: ['#000', '#000'],
+                       normalizeFunction: 'polynomial'
+                    }]
+                },
+                backgroundColor: '#eef3f7',
+                onLabelShow: function(e, el, code){
+                   el.html(el.html()+' (GDP - '+gdpData[code]+')');
+                }
+            });
+        });
         
         sites = [];
         
@@ -547,20 +492,51 @@
         
         $("#moreBtn").on("click", function(){
             for(var i=0;i<100;i++)            
-                LoadSites(sites);
+                LoadSites();
             
-            window.markerCluster.addMarkers(window.markers,true);
+            markerCluster.addMarkers(markers,true);
         });
 
-        function LoadSites(sites){
-            
-            var $row = $("<tr> <td>"+ window.AddTextHref + sites[CurrentCoordinates].siteName + "</a></td> <td>" + sites[CurrentCoordinates].siteId + "</td> <td>" + sites[CurrentCoordinates].technology + "</td><td>"+window.AwesomeRadioButton+"</td>"+"</tr>");
+        function LoadSites(){
+            var AwesomeRadioButton = "<center>"+
+                         "<div class=\"btn-row>\""+
+                         "<div class=\"btn-group\" data-toggle=\"buttons\">"+
+                         "<label class=\"btn point-enable btn-danger active\">" +
+                            "<input class=\"radio\" type=\"radio\" name=\"options\" id=\"option1\" data-id=\""+sites[CurrentCoordinates].siteName+"\"> Disabled" +
+                         "</label>" +
+                         "<label class=\"btn point-disable btn-success\"> " +
+                            "<input class=\"radio\" type=\"radio\" name=\"options\" id=\"option2\" data-id=\""+sites[CurrentCoordinates].siteName+"\"> Enabled" +
+                         "</label>" +                                
+                         "</label>" +                      
+                         "</div>"+
+                         "</center>";
+
+            var $row = $("<tr> <td>"+ AddTextHref + sites[CurrentCoordinates].siteName + "</a></td> <td>" + sites[CurrentCoordinates].siteId + "</td> <td>" + sites[CurrentCoordinates].technology + "</td><td>"+AwesomeRadioButton+"</td>"+"</tr>");
 
             $row.find('a.title').click(function(e){
                 e.preventDefault();
-                ClearAllMarkersAnimation();
-                ClickSiteName( $(this).text() );
+                clearAllMarkersAnimation();
+                clickSiteName( $(this).text() );
             });
+
+            $row.find('label.btn').click(function(e){
+                clearAllMarkersAnimation();
+                var action = $(this).hasClass('point-enable') ? 'enable' : 'disable';
+                var ourId = $('input.radio',$(this)).data('id');
+                var marker = findMarkerInMarkers(ourId);
+                map.setCenter(marker.getPosition());
+                map.setZoom(15);
+                if(action=='disable'){
+                    marker.setVisible(false);
+                    marker.setAnimation(null);                    
+                }
+                else{
+                    marker.setVisible(true);
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                }
+
+            });
+
 
             $SiteTableBody.append($row);        
             
@@ -580,48 +556,76 @@
               content: contentString
             });
 
-            PlotMarkers(infowindow,window.map, window.sites[CurrentCoordinates].lat, window.sites[CurrentCoordinates].lng, sites[CurrentCoordinates].siteName);
-            window.CurrentCoordinates=window.CurrentCoordinates+1;
+            plotMarkers(infowindow,map, sites[CurrentCoordinates].lat, sites[CurrentCoordinates].lng, sites[CurrentCoordinates].siteName);
+            CurrentCoordinates=CurrentCoordinates+1;
             //Panel Body Always at End 
             var elem = document.getElementById('PanelBody');
             elem.scrollTop = elem.scrollHeight;
-            window.map.setZoom(12);
+            map.setZoom(12);
         }
 
         $("#ClearBtn").on("click", function(){
+            BeforeCurrentCoordinates=CurrentCoordinates;
+            CurrentCoordinates=0
             hideMarkers();
+            $(document).ready(function() {
+               $("#SiteTable").find("tr:gt(0)").remove();
+            });
         });        
 
-        function FindMarker(SomeId){
-            for (var marker in window.map.getPanes().overlayImage.getElementsByTagName("div")) {
-                 if (marker.title == SomeId) return marker;
+        $("#PlotBtn").on("click", function(){
+            for(var i=0;i<BeforeCurrentCoordinates;i++)
+                LoadSites();
+            markerCluster.addMarkers(markers,true);
+            
+        });
+        var circles=[];
+        var circle;
+        function clickSiteName(siteName) {
+            var marker = findMarkerInMarkers(siteName);
+
+            if (marker != null) {
+                marker.setVisible(true);
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+                map.setCenter(marker.getPosition());
+                map.setZoom(15);
+                clearMap();
+                circle = new google.maps.Circle({
+                  map: map,
+                  radius: Number(getRadius(siteName)),    // 10 miles in metres
+                  fillColor: '#AA0000'
+                });
+                circle.bindTo('center', marker, 'position');
+                circles.push(circle);
+            }
+            else if (!findAndPlotMarkerInVector(siteName)) {
+                alert("No such Site-ID Found")
+            }
+        };
+        function clearMap(){
+            for (var i = 0; i < circles.length; i++) {
+                circles[i].setVisible(false);
             }
         }
 
-        function ClickSiteName(siteName) {
-            var marker = FindMarkerInMarkers(siteName);
-
-            if(marker!=null){
-                marker.setVisible(true);
-                marker.setAnimation(google.maps.Animation.BOUNCE)
-                window.map.setCenter(marker.getPosition());
-                window.map.setZoom(15);
+        function getRadius(siteName){
+            for (var i = 0; i < markers.length; i++) {
+                    if(markers[i].title === siteName) {
+                        return sites[i].radius;
+                    }
             }
-            else if(!FindAndPlotMarkerInVector(siteName))
-                alert("No such Site-ID Found")
         }
 
         $("#SiteSearchBox").keyup(function(event){
             if(event.keyCode == 13){
-                ClearAllMarkersAnimation();
-                ClickSiteName(document.getElementById("SiteSearchBox").value);
+                clearAllMarkersAnimation();
+                clickSiteName(document.getElementById("SiteSearchBox").value);
             }
         });
 
-        function FindAndPlotMarkerInVector(MarkerSiteNameToFind){
+        function findAndPlotMarkerInVector(markerSiteName){
             for (var i = 0; i < sites.length; i++) {
-
-                if(sites[i].siteName==MarkerSiteNameToFind){
+                if(sites[i].siteName==markerSiteName){
                     var contentString = '<div id="content">'+
                       '<div id="siteNotice">'+
                       '</div>'+
@@ -636,49 +640,54 @@
 
                     var infowindow  = new google.maps.InfoWindow({
                       content: contentString
-                    });
-                    PlotMarkers(infowindow,window.map, window.sites[i].lat, window.sites[i].lng, sites[i].siteName);
-                    window.map.setZoom(15);
+                        });
+
+                    plotMarkers(infowindow,map, sites[i].lat, sites[i].lng, sites[i].siteName);
+                    map.setZoom(15);
                     return true;
                 }
             }
             return false;
-        }
+        };
 
-        var flickerAPI = "http://localhost:4000/points";
-       $.get( flickerAPI, {})
+        var dataUrl = "http://localhost:4000/points";
 
-           .done(function( data ) {
-                $.each( data, function( i, item ) {
-                    var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude};
-                    sites.push(siteInfo);
+        $.get(dataUrl, {})
 
-                });
-                for(var i=0;i<100;i++)
-                    LoadSites(sites);
-                window.markerCluster.addMarkers(window.markers,true);
-           });
+        .done(function(data) {
+            $.each(data, function( i, item ) {
+                var siteInfo = {siteName:item.site_name, siteId:item.site_id, technology:item.technology, lng:item.position.longitude, lat:item.position.latitude, radius:item.position.coordinates_source.radius};
+                sites.push(siteInfo);
+            });
 
-           var isPanelMinimize=0;
-        $(".btn-minimize").click(function(){
-            if(isPanelMinimize==1){
+            for(var i = 0; i < 100; i++) {
+                LoadSites();
+            }
+        
+            markerCluster.addMarkers(markers,true);
+        });
+
+        var isPanelMinimize = 0;
+
+        $(".btn-minimize").click(function() {
+            if (isPanelMinimize == 1) {
                 $(".panel-body").collapse('hide');
                 isPanelMinimize=0;
             }
-            else{
+            else {
                 $(".panel-body").collapse('show');
-                isPanelMinimize=1;
+                isPanelMinimize = 1;
             }
         });
 
-        function ClearAllMarkersAnimation(){
-            var i=0;
-            while(i<(window.markers).length){
-                    (window.markers[i]).setAnimation(null);
+        function clearAllMarkersAnimation() {
+            var i = 0;
+            
+            while(i < markers.length) {
+                    (markers[i]).setAnimation(null);
                     i++;
             }
-        }
-
+        };
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initAutocomplete"
